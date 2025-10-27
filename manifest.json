@@ -4,10 +4,10 @@
   "manifest_version": 3,
   "description": "Use Chrome's built-in AI to draft a task and save it to Google Tasks.",
   "action": { "default_popup": "popup/popup.html" },
-  "background": { "service_worker": "bg/sw.js" },
+  "background": { "service_worker": "bg/tasks.js" },
   "permissions": ["identity", "storage", "activeTab", "scripting"],
   "host_permissions": ["https://tasks.googleapis.com/*"],
-  "icons": { "128": "icons/icon128.png" },
+  "icons": { "128": "icons/icon.png" },
 
   "oauth2": {
     "client_id": "YOUR_CLIENT_ID.apps.googleusercontent.com",
