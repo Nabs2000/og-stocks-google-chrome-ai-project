@@ -1,19 +1,16 @@
 {
+  "name": "AI → Google Tasks",
+  "version": "1.0.0",
   "manifest_version": 3,
-  "name": "OG stocks",
-  "version": "1.0",
-  "description": "Gemini Dev project",
-  // "icons": {
-  //   "16": "icons/icon16.png",
-  //   "48": "icons/icon48.png",
-  //   "128": "icons/icon128.png"
-  // },
-  "action": {
-    "default_popup": "popup.html",
-    // "default_icon": "icons/icon16.png",
-    "default_title": "Click Me!"
-  },
-  "permissions": [
-    "activeTab"
-  ]
+  "description": "Use Chrome's built-in AI to draft a task and save it to Google Tasks.",
+  "action": { "default_popup": "popup/popup.html" },
+  "background": { "service_worker": "bg/sw.js" },
+  "permissions": ["identity", "storage", "activeTab", "scripting"],
+  "host_permissions": ["https://tasks.googleapis.com/*"],
+  "icons": { "128": "icons/icon128.png" },
+
+  "oauth2": {
+    "client_id": "YOUR_CLIENT_ID.apps.googleusercontent.com",
+    "scopes": ["https://www.googleapis.com/auth/tasks"]
+  }
 }
