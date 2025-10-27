@@ -1,15 +1,13 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-    <title>My Popup</title>
-    <style>
-        body { width: 200px; height: 100px; padding: 10px; }
-        button { width: 100%; padding: 10px; }
-    </style>
-</head>
-<body>
-    <h1>Hello World!</h1>
-    <button id="alertButton">Click for Alert</button>
+  <body style="font-family: system-ui; margin: 12px; width: 320px">
+    <h3>Create a task</h3>
+    <textarea id="raw" rows="5" placeholder="e.g., 'Email Dr. Lee about dataset by Friday 5pm, include PDF'"></textarea>
+    <div style="margin-top: 8px">
+      <button id="draft">AI: draft task</button>
+      <button id="save" disabled>Save to Google Tasks</button>
+    </div>
+    <pre id="preview" style="white-space: pre-wrap; margin-top: 8px"></pre>
     <script src="popup.js"></script>
-</body>
+  </body>
 </html>
