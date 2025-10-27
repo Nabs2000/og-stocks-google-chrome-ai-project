@@ -21,5 +21,8 @@
       "matches": ["<all_urls>"],
       "js": ["content.js"]
     }
+  ],
+  "host_permissions": [
+    "https://generativelanguage.googleapis.com/*"
   ]
 }
