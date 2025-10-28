@@ -1,5 +1,8 @@
 async function summarizeText(text) {
   document.getElementById("summaryOutput").textContent = "Summarizing...";
+  const spinner = document.getElementById("loadingSpinner");
+  spinner.classList.remove("hidden");
+  document.getElementById("summaryOutput").innerText = "";
 
   try {
     const response = await chrome.runtime.sendMessage({
@@ -9,6 +12,8 @@ async function summarizeText(text) {
 
     document.getElementById("summaryOutput").textContent =
       response?.summary || "Summary not available.";
+
+    spinner.classList.add("hidden");
 
     const summaryOutput = document.getElementById("summaryOutput");
     const actionsDiv = document.getElementById("summaryActions");
@@ -36,6 +41,7 @@ async function summarizeText(text) {
     document.getElementById("summaryOutput").textContent =
       "Something went wrong. Check the console.";
   }
+  spinner.classList.add("hidden");
 }
 
 async function handleSummarizeClick() {
