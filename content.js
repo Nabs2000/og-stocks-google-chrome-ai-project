@@ -44,18 +44,43 @@ document.addEventListener("mouseup", (e) => {
   summarizeBtn.addEventListener("click", async (ev) => {
     ev.stopPropagation();
     ev.preventDefault();
-    const selectedText = (window.getSelection()?.toString() || "").trim();
-    if (!selectedText) return;
+    
+    try {
+      const selectedText = (window.getSelection()?.toString() || "").trim();
+      if (!selectedText) return;
 
-    // Save the selected text in local storage so popup can access it
-    await chrome.storage.local.set({ lastSelection: selectedText });
+      // Save the selected text in local storage so popup can access it
+      try {
+        await chrome.storage.local.set({ lastSelection: selectedText });
+      } catch (storageError) {
+        console.error('Error saving selection:', storageError);
+        return;
+      }
 
-    // Ask background script to open the popup
-    chrome.runtime.sendMessage({ type: "OPEN_SUMMARY_POPUP" });
+      // Check if extension context is still valid
+      if (!chrome.runtime?.id) {
+        console.log('Extension context invalidated, reloading...');
+        window.location.reload();
+        return;
+      }
 
-    // Optionally remove the button after clicking
-    summarizeBtn.remove();
-    summarizeBtn = null;
+      // Ask background script to open the popup
+      try {
+        await chrome.runtime.sendMessage({ type: "OPEN_SUMMARY_POPUP" });
+      } catch (messageError) {
+        console.error('Error sending message to background:', messageError);
+        if (messageError.message.includes('context invalidated')) {
+          window.location.reload();
+        }
+        return;
+      }
+    } finally {
+      // Always clean up the button
+      if (summarizeBtn) {
+        summarizeBtn.remove();
+        summarizeBtn = null;
+      }
+    }
   });
 
   document.body.appendChild(summarizeBtn);
