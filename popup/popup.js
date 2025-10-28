@@ -15,6 +15,8 @@ document.getElementById("summarizeBtn").addEventListener("click", async () => {
       return;
     }
 
+    document.getElementById("summaryOutput").textContent = "Summarizing...";
+
     // Ask background to summarize (it holds the API call)
     const response = await chrome.runtime.sendMessage({
       type: "TEXT_SELECTED",
