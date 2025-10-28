@@ -35,16 +35,15 @@ async function handleSummarizeClick() {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-  
+
   document
     .getElementById("summarizeBtn")
     .addEventListener("click", handleSummarizeClick);
 
-  
   const { lastSelection } = await chrome.storage.local.get("lastSelection");
 
   if (lastSelection) {
-    
+
     document.getElementById("summaryOutput").textContent =
       "Summarizing your last selection...";
     await summarizeText(lastSelection);
