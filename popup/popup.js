@@ -20,10 +20,35 @@ async function summarizeText(text) {
 
     actionsDiv.classList.remove("hidden");
 
-    document.getElementById("copyBtn").onclick = () => {
-      navigator.clipboard.writeText(summaryOutput.innerText);
-      alert("Summary copied to clipboard!");
+    const copyFeedback = document.getElementById("copyFeedback");
+
+    document.getElementById("copyBtn").onclick = async () => {
+      const summaryText = summaryOutput.innerText.trim();
+      if (!summaryText) return;
+
+      await navigator.clipboard.writeText(summaryText);
+
+      const oldMsg = document.getElementById("copyMessage");
+      if (oldMsg) oldMsg.remove();
+
+      const msg = document.createElement("div");
+      msg.id = "copyMessage";
+      msg.textContent = "Copied!";
+      msg.style.color = "#34A853";
+      msg.style.fontSize = "13px";
+      msg.style.marginTop = "10px";
+      msg.style.transition = "opacity 0.3s ease";
+      msg.style.opacity = "1";
+
+      const buttonsContainer = document.getElementById("buttonsContainer") || summaryOutput.parentElement;
+      buttonsContainer.appendChild(msg);
+
+      setTimeout(() => {
+        msg.style.opacity = "0";
+        setTimeout(() => msg.remove(), 300);
+      }, 3000);
     };
+
 
     document.getElementById("saveBtn").onclick = async () => {
       const savedSummaries = (await chrome.storage.local.get("summaries")).summaries || [];

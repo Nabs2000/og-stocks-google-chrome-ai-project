@@ -79,3 +79,21 @@ body {
   display: none !important;
 }
 
+#copyFeedback {
+  color: #34A853; /* Google green */
+  font-size: 12px;
+  margin-left: 6px;
+  align-self: center;
+  transition: opacity 0.3s ease;
+}
+
+#copyFeedback.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+#copyFeedback:not(.hidden) {
+  opacity: 1;
+  visibility: visible;
+}
+
