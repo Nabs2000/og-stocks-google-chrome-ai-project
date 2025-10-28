@@ -34,3 +34,29 @@ body {
   font-size: 13px;
   color: #333;
 }
+
+#summaryActions {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+#summaryActions.hidden {
+  display: none;
+}
+
+#summaryActions button {
+  background: #4285F4;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+#summaryActions button:hover {
+  background: #3367D6;
+}
+

@@ -9,6 +9,28 @@ async function summarizeText(text) {
 
     document.getElementById("summaryOutput").textContent =
       response?.summary || "Summary not available.";
+
+    const summaryOutput = document.getElementById("summaryOutput");
+    const actionsDiv = document.getElementById("summaryActions");
+
+    actionsDiv.classList.remove("hidden");
+
+    document.getElementById("copyBtn").onclick = () => {
+      navigator.clipboard.writeText(summaryOutput.innerText);
+      alert("Summary copied to clipboard!");
+    };
+
+    document.getElementById("saveBtn").onclick = async () => {
+      const savedSummaries = (await chrome.storage.local.get("summaries")).summaries || [];
+      savedSummaries.unshift({
+        text,
+        summary: summaryOutput.innerText,
+        timestamp: new Date().toLocaleString(),
+      });
+      await chrome.storage.local.set({ summaries: savedSummaries.slice(0, 10) }); // keep last 10
+      alert("Summary saved!");
+    };
+
   } catch (err) {
     console.error(err);
     document.getElementById("summaryOutput").textContent =
