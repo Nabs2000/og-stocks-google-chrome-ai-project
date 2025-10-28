@@ -5,5 +5,5 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 chrome.action.onClicked.addListener(function() {
-    chorme.tabs.create({ url: 'popup.html' })
-})
+    chrome.tabs.create({ url: "index.html"});
+});
