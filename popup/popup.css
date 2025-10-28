@@ -1,0 +1,36 @@
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 250px;
+  min-height: 180px;
+  font-family: system-ui, sans-serif;
+  text-align: center;
+  background-color: #fafafa;
+  margin: 0;
+  padding: 10px;
+}
+
+#summarizeBtn {
+  margin-top: 12px;
+  padding: 10px 16px;
+  background-color: #1a73e8;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s ease;
+}
+
+#summarizeBtn:hover {
+  background-color: #155ab6;
+}
+
+#summaryOutput {
+  margin-top: 16px;
+  white-space: pre-wrap;
+  font-size: 13px;
+  color: #333;
+}
