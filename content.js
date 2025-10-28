@@ -1,81 +1,62 @@
-chrome.runtime.onMessage.addListener((message) => {
-  if (message?.type === "SHOW_SUMMARY") {
-    showSummary(message.summary);
-  }
-});
+let summarizeBtn = null;
 
-let lastSent = "";         // to avoid re-sending the same text repeatedly
-let summaryEl = null;      // reuse a single floating box
-let hideTimer = null;
-
-document.addEventListener("mouseup", () => {
+document.addEventListener("mouseup", (e) => {
   const text = (window.getSelection()?.toString() || "").trim();
+
+  // Remove old button if any
+  if (summarizeBtn) {
+    summarizeBtn.remove();
+    summarizeBtn = null;
+  }
+
+  // Only show button if text is selected
   if (!text) return;
 
-  // Avoid spamming background with identical selection
-  if (text === lastSent) return;
-  lastSent = text;
+  // Create floating button
+  summarizeBtn = document.createElement("button");
+  summarizeBtn.textContent = "Summarize";
+  Object.assign(summarizeBtn.style, {
+    position: "absolute",
+    top: `${e.pageY + 10}px`,
+    left: `${e.pageX + 10}px`,
+    background: "#1a73e8",
+    color: "white",
+    border: "none",
+    borderRadius: "6px",
+    padding: "6px 10px",
+    fontSize: "12px",
+    cursor: "pointer",
+    zIndex: 999999,
+    boxShadow: "0 2px 6px rgba(0,0,0,0.25)",
+  });
 
-  // Tell background to summarize
-  chrome.runtime.sendMessage({ type: "TEXT_SELECTED", text });
+  // Prevent click from retriggering the document's mouseup
+  summarizeBtn.addEventListener("mousedown", (ev) => {
+    ev.stopPropagation();
+    ev.preventDefault();
+  });
+  summarizeBtn.addEventListener("mouseup", (ev) => {
+    ev.stopPropagation();
+    ev.preventDefault();
+  });
+
+  // Handle click (now it won’t re-trigger mouseup)
+  summarizeBtn.addEventListener("click", async (ev) => {
+    ev.stopPropagation();
+    ev.preventDefault();
+    const selectedText = (window.getSelection()?.toString() || "").trim();
+    if (!selectedText) return;
+
+    // Save the selected text in local storage so popup can access it
+    await chrome.storage.local.set({ lastSelection: selectedText });
+
+    // Ask background script to open the popup
+    chrome.runtime.sendMessage({ type: "OPEN_SUMMARY_POPUP" });
+
+    // Optionally remove the button after clicking
+    summarizeBtn.remove();
+    summarizeBtn = null;
+  });
+
+  document.body.appendChild(summarizeBtn);
 });
-
-function showSummary(summary) {
-  if (!summaryEl) {
-    summaryEl = document.createElement("div");
-    summaryEl.id = "quick-summarizer-bubble";
-    Object.assign(summaryEl.style, {
-      position: "fixed",
-      top: "20px",
-      right: "20px",
-      background: "white",
-      color: "#111",
-      padding: "10px 12px",
-      border: "1px solid #ccc",
-      borderRadius: "8px",
-      zIndex: 2147483647, // max-ish
-      maxWidth: "360px",
-      boxShadow: "0 6px 20px rgba(0,0,0,0.15)",
-      fontFamily: "system-ui, sans-serif",
-      whiteSpace: "pre-wrap",
-      lineHeight: "1.35",
-    });
-
-    // Close button
-    const closeBtn = document.createElement("button");
-    closeBtn.textContent = "×";
-    Object.assign(closeBtn.style, {
-      position: "absolute",
-      top: "4px",
-      right: "6px",
-      border: "none",
-      background: "transparent",
-      fontSize: "16px",
-      cursor: "pointer",
-    });
-    closeBtn.addEventListener("click", () => {
-      summaryEl.remove();
-      summaryEl = null;
-    });
-    summaryEl.appendChild(closeBtn);
-
-    const content = document.createElement("div");
-    content.id = "quick-summarizer-content";
-    summaryEl.appendChild(content);
-
-    document.body.appendChild(summaryEl);
-  }
-
-  // Update content
-  const content = summaryEl.querySelector("#quick-summarizer-content");
-  content.textContent = summary || "Summary not available.";
-
-  // Auto-hide after 20s (optional)
-  clearTimeout(hideTimer);
-  hideTimer = setTimeout(() => {
-    if (summaryEl) {
-      summaryEl.remove();
-      summaryEl = null;
-    }
-  }, 20000);
-}

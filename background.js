@@ -59,3 +59,12 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   // IMPORTANT: keep the message channel open for async sendResponse
   return true;
 });
+
+chrome.runtime.onMessage.addListener((message) => {
+  if (message?.type === "OPEN_SUMMARY_POPUP") {
+    // Try to open the popup programmatically
+    chrome.action.openPopup().catch((err) => {
+      console.warn("Could not open popup automatically:", err);
+    });
+  }
+});
