@@ -15,6 +15,10 @@
     "storage",
     "identity"
   ],
+  "oauth2": {
+    "client_id": "521658906047-6m7vvg2ntt1qg5ilnlv7csp8cveepdl1.apps.googleusercontent.com",
+    "scopes":[""]
+  },
   "background": {
     "service_worker": "background.js"
   },
