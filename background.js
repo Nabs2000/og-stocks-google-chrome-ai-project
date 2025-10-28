@@ -1,7 +1,13 @@
-// IMPORTANT: Do NOT commit real API keys to source control.
-// Replace this with a build-time injected value or load from a secure server.
-// For development create a local `.env` (not committed) and inject the key when building.
-const API_KEY = "REPLACE_WITH_API_KEY";
+// API Key is loaded from chrome.storage.local
+let API_KEY = '';
+
+// Load API key from storage
+chrome.storage.local.get('GEMINI_API_KEY', (data) => {
+  API_KEY = data.GEMINI_API_KEY || '';
+  if (!API_KEY) {
+    console.warn('No API key found. Please set it in the extension options.');
+  }
+});
 
 // Optionally move this into a separate module; keeping it here is simplest
 async function summarizeWithGemini(text) {
