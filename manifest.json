@@ -1,27 +1,37 @@
 {
   "manifest_version": 3,
-  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0YU4kAwxG/2S965aeH/bZbnFWZWWi9k94FK/MCa7fM/C+p+dKX2AS3D2dWG39Z4yduYTYjhoBv7nPDIby7ItBKkNzrvRalSIFgfWfFx3pdfmkDEeak7HtiQrofjhMDUxBltDvWRviqYtzJGL7fPVV5Lyr1sXESiURnZebpA2qb9puJp08nmPnDilcJwBBOgmE5vrmTLAcdFQ0JRUnC3WsKlD3biDB16ODooCCLrmR7/h5mMtwZ4USLa7L4U9wrxxu5wP7NqDRjutNFknXwnuaAjnbUs7Sz6nf0GqWdz9M821jyz3hRSgQFrxlUk9kFQ0N4lBFXYH8N39m/5WQesS+QIDAQAB",
-  "name": "OG stocks",
+  "name": "Clipboard AI",
   "version": "1.0",
-  "description": "Gemini Dev project",
+  "description": "Your all-around Chrome extension for summarizing Breezy lyrics :D",
   "action": {
     "default_popup": "popup/popup.html",
-    "default_title": "Click Me!"
+    "default_title": "OG Stocks"
   },
   "permissions": [
     "activeTab",
     "scripting",
     "contextMenus",
-    "storage"
+    "storage",
+    "geolocation"
+  ],
+  "host_permissions": [
+    "https://maps.googleapis.com/*"
   ],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "gmaps/background.js"
   },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["scripts/content.js"]
+      "js": ["gmaps/content.js", "summarize/content.js"],
+      "css": ["gmaps/content.css", "summarize/content.css"]
     }
   ],
-  "options_page": "options/options.html"
+  "web_accessible_resources": [
+    {
+      "resources": ["*.woff2", "*.ttf"],
+      "matches": ["<all_urls>"],
+      "use_dynamic_url": true
+    }
+  ]
 }
