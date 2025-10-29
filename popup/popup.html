@@ -1,29 +1,92 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>My Popup</title>
+    <title>Maps Directions</title>
     <style>
       body {
-        width: 200px;
-        height: 100px;
-        padding: 10px;
+        width: 250px;
+        padding: 15px;
+        font-family: Arial, sans-serif;
       }
       button {
         width: 100%;
         padding: 10px;
+        margin: 5px 0;
+        cursor: pointer;
       }
-      .icon {
-        width: 20px;
-        height: 20px;
+      .user-info {
+        margin: 10px 0;
+        padding: 10px;
+        background: #f5f5f5;
+        border-radius: 4px;
+        display: none;
+      }
+      .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-right: 10px;
+        vertical-align: middle;
+      }
+      .user-details {
+        display: inline-block;
+        vertical-align: middle;
+      }
+      .user-name {
+        font-weight: bold;
+        display: block;
+      }
+      .user-email {
+        font-size: 0.8em;
+        color: #666;
+      }
+      .signin-btn {
+        background-color: #4285f4;
+        color: white;
+        border: none;
+        border-radius: 4px;
+      }
+      .signout-btn {
+        background-color: #f44336;
+        color: white;
+        border: none;
+        border-radius: 4px;
+      }
+      .status {
+        margin: 10px 0;
+        padding: 10px;
+        border-radius: 4px;
+        display: none;
+      }
+      .success {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+      }
+      .error {
+        background-color: #ffebee;
+        color: #c62828;
       }
     </style>
   </head>
   <body>
-    <h1>Hello World!</h1>
+    <div id="userInfo" class="user-info">
+      <img id="userAvatar" class="user-avatar" src="" alt="User Avatar">
+      <div class="user-details">
+        <span id="userName" class="user-name"></span>
+        <span id="userEmail" class="user-email"></span>
+      </div>
+    </div>
+
+    <button id="signinBtn" class="signin-btn">Sign in with Google</button>
+    <button id="signoutBtn" class="signout-btn" style="display: none;">Sign Out</button>
+    
+    <div id="statusMessage" class="status"></div>
+    
     <button id="suggestMaps">
-      Suggest Directions
       <img class="icon" src="../images/gmaps_icon.png" alt="Maps" />
+      Get Directions
     </button>
-    <script src="popup.js"></script>
+
+    <script type="module" src="popup.js"></script>
   </body>
 </html>
