@@ -14,10 +14,13 @@
     "scripting",
     "contextMenus",
     "storage",
-    "aiSummarizer"
+    "sidePanel"
   ],
   "background": {
     "service_worker": "summarize/background.js"
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
   },
   "content_scripts": [
     {

@@ -1,0 +1,53 @@
+body {
+  font-family: Arial, sans-serif;
+  padding: 16px;
+  background: #f7f7f7;
+  color: #333;
+  width: 320px;
+}
+
+h2 {
+  font-size: 18px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+#summaryOutput {
+  background: white;
+  padding: 10px;
+  border-radius: 8px;
+  min-height: 150px;
+  white-space: pre-wrap;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+}
+
+.button-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 12px;
+  gap: 8px;
+}
+
+button {
+  padding: 6px 12px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+#copiedText {
+  color: green;
+  font-size: 14px;
+}
+
+.hidden {
+  display: none;
+}
