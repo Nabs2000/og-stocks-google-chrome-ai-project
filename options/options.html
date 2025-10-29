@@ -1,73 +1,78 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>OG Stocks - Options</title>
     <style>
-        body {
-            width: 400px;
-            padding: 16px;
-            font-family: Arial, sans-serif;
-        }
-        .container {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        input[type="text"] {
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        .status {
-            margin-top: 10px;
-            padding: 10px;
-            border-radius: 4px;
-            display: none;
-        }
-        .success {
-            background-color: #dff0d8;
-            color: #3c763d;
-            border: 1px solid #d6e9c6;
-        }
-        .error {
-            background-color: #f2dede;
-            color: #a94442;
-            border: 1px solid #ebccd1;
-        }
+      body {
+        width: 400px;
+        padding: 16px;
+        font-family: Arial, sans-serif;
+      }
+      .container {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      input[type="text"] {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        width: 100%;
+        box-sizing: border-box;
+      }
+      button {
+        background-color: #4caf50;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+      button:hover {
+        background-color: #45a049;
+      }
+      .status {
+        margin-top: 10px;
+        padding: 10px;
+        border-radius: 4px;
+        display: none;
+      }
+      .success {
+        background-color: #dff0d8;
+        color: #3c763d;
+        border: 1px solid #d6e9c6;
+      }
+      .error {
+        background-color: #f2dede;
+        color: #a94442;
+        border: 1px solid #ebccd1;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <h1>OG Stocks Settings</h1>
-        <div class="form-group">
-            <label for="api-key">Gemini API Key:</label>
-            <input type="password" id="api-key" placeholder="Enter your Gemini API key">
-            <p style="font-size: 12px; color: #666;">
-                Your API key is stored locally in your browser and never sent to any server other than Google's API.
-            </p>
-        </div>
-        <button id="save">Save</button>
-        <div id="status" class="status"></div>
+      <h1>OG Stocks Settings</h1>
+      <div class="form-group">
+        <label for="api-key">Google Maps API Key:</label>
+        <input
+          type="password"
+          id="api-key"
+          placeholder="Enter your Google Maps API key"
+        />
+        <p style="font-size: 12px; color: #666">
+          Your API key is stored locally in your browser and never sent to any
+          server other than Google's API.
+        </p>
+      </div>
+      <button id="save">Save</button>
+      <div id="status" class="status"></div>
     </div>
     <script src="options.js"></script>
-</body>
+  </body>
 </html>
