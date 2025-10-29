@@ -33,11 +33,11 @@ document.addEventListener("mouseup", (e) => {
   // Prevent click from retriggering the document's mouseup
   summarizeBtn.addEventListener("mousedown", (ev) => {
     ev.stopPropagation();
-    ev.preventDefault();
+    // ev.preventDefault();
   });
   summarizeBtn.addEventListener("mouseup", (ev) => {
     ev.stopPropagation();
-    ev.preventDefault();
+    // ev.preventDefault();
   });
 
   // Handle click (now it won’t re-trigger mouseup)
@@ -66,7 +66,7 @@ document.addEventListener("mouseup", (e) => {
 
       // Ask background script to open the popup
       try {
-        await chrome.runtime.sendMessage({ type: "OPEN_SUMMARY_POPUP" });
+        await chrome.runtime.sendMessage({ type: "OPEN_SIDE_PANEL" });
       } catch (messageError) {
         console.error('Error sending message to background:', messageError);
         if (messageError.message.includes('context invalidated')) {

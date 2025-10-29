@@ -44,3 +44,13 @@ chrome.runtime.onMessage.addListener((message) => {
     });
   }
 });
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === "OPEN_SIDE_PANEL") {
+    // Open the side panel for the current tab
+    chrome.sidePanel.open({ tabId: sender.tab.id }).catch((err) => {
+      console.error("Failed to open side panel:", err);
+    });
+  }
+});
+
