@@ -22,5 +22,6 @@
       "matches": ["<all_urls>"],
       "js": ["scripts/content.js"]
     }
-  ]
+  ],
+  "options_page": "options/options.html"
 }
