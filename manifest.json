@@ -13,7 +13,8 @@
     "activeTab",
     "scripting",
     "contextMenus",
-    "storage"
+    "storage",
+    "aiSummarizer"
   ],
   "background": {
     "service_worker": "summarize/background.js"

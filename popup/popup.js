@@ -11,7 +11,7 @@ async function summarizeText(text) {
     });
 
     document.getElementById("summaryOutput").textContent =
-      response?.summary || "Summary not available.";
+      response?.summary || "Browser does not support built-in summarizer.";
 
     spinner.classList.add("hidden");
 
