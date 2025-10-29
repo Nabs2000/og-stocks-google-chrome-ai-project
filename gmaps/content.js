@@ -4,33 +4,33 @@ let statusPanel = null;
 function showStatus(message, isError = false) {
   // Remove existing panel if any
   if (statusPanel) statusPanel.remove();
-  
+
   // Create status panel
-  statusPanel = document.createElement('div');
+  statusPanel = document.createElement("div");
   Object.assign(statusPanel.style, {
-    position: 'fixed',
-    top: '20px',
-    right: '20px',
-    width: '300px',
-    padding: '15px',
-    background: isError ? '#fde8e8' : '#e8f4f8',
-    color: isError ? '#d32f2f' : '#0d47a1',
-    borderRadius: '8px',
-    boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
-    zIndex: '100000',
-    fontFamily: 'Arial, sans-serif',
-    fontSize: '14px',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px'
+    position: "fixed",
+    top: "20px",
+    right: "20px",
+    width: "300px",
+    padding: "15px",
+    background: isError ? "#fde8e8" : "#e8f4f8",
+    color: isError ? "#d32f2f" : "#0d47a1",
+    borderRadius: "8px",
+    boxShadow: "0 2px 10px rgba(0,0,0,0.2)",
+    zIndex: "100000",
+    fontFamily: "Arial, sans-serif",
+    fontSize: "14px",
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
   });
-  
+
   // Add loading spinner or error icon
-  const icon = document.createElement('div');
+  const icon = document.createElement("div");
   if (isError) {
-    icon.textContent = '⚠️';
+    icon.textContent = "⚠️";
   } else {
-    icon.className = 'loading-spinner';
+    icon.className = "loading-spinner";
     icon.style.cssText = `
       width: 16px;
       height: 16px;
@@ -39,9 +39,9 @@ function showStatus(message, isError = false) {
       border-top-color: #0d47a1;
       animation: spin 1s ease-in-out infinite;
     `;
-    
+
     // Add spin animation
-    const style = document.createElement('style');
+    const style = document.createElement("style");
     style.textContent = `
       @keyframes spin {
         to { transform: rotate(360deg); }
@@ -49,14 +49,14 @@ function showStatus(message, isError = false) {
     `;
     document.head.appendChild(style);
   }
-  
+
   // Add message
-  const messageEl = document.createElement('div');
+  const messageEl = document.createElement("div");
   messageEl.textContent = message;
-  
+
   // Add close button
-  const closeButton = document.createElement('button');
-  closeButton.textContent = '×';
+  const closeButton = document.createElement("button");
+  closeButton.textContent = "×";
   closeButton.style.cssText = `
     margin-left: auto;
     background: none;
@@ -68,13 +68,13 @@ function showStatus(message, isError = false) {
     line-height: 1;
   `;
   closeButton.onclick = () => statusPanel.remove();
-  
+
   // Assemble the panel
   statusPanel.appendChild(icon);
   statusPanel.appendChild(messageEl);
   statusPanel.appendChild(closeButton);
   document.body.appendChild(statusPanel);
-  
+
   // Auto-remove after 5 seconds for non-error messages
   if (!isError) {
     setTimeout(() => {
@@ -118,7 +118,7 @@ document.addEventListener("mouseup", (e) => {
     ev.stopPropagation();
     ev.preventDefault();
   };
-  
+
   googleMapsButton.addEventListener("mousedown", stopEvent);
   googleMapsButton.addEventListener("mouseup", stopEvent);
 
@@ -127,28 +127,56 @@ document.addEventListener("mouseup", (e) => {
     stopEvent(ev);
 
     try {
+      console.log("Button clicked");
       const selectedText = (window.getSelection()?.toString() || "").trim();
       if (!selectedText) return;
-
+      console.log("Selected text:", selectedText);
       // Show loading message
-      showStatus('Analyzing text for locations...');
-      
-      // Send the selected text to the background script for processing
+      showStatus("Analyzing text for locations...");
+
+      // First check if user is authenticated
+      const authCheck = await chrome.runtime.sendMessage({
+        type: "CHECK_AUTH",
+      });
+      console.log("Authentication check result:", authCheck);
+
+      // If not authenticated, prompt for authentication
+      if (!authCheck.authenticated) {
+        console.log("User is not authenticated");
+        showStatus("Please sign in to continue...");
+        const authResult = await chrome.runtime.sendMessage({
+          type: "AUTHENTICATE",
+        });
+
+        console.log("Authentication result:", authResult);
+        if (!authResult.success) {
+          throw new Error("Authentication failed. Please try again.");
+        }
+      }
+
+      console.log("User is authenticated");
+
+      // Now get directions
       const response = await chrome.runtime.sendMessage({
         type: "GET_DIRECTIONS",
-        text: selectedText
+        text: selectedText,
       });
 
       if (!response.ok) {
-        throw new Error(response.error || 'Failed to get directions');
+        if (response.requiresAuth) {
+          // This shouldn't happen since we just authenticated, but handle it anyway
+          throw new Error(
+            "Authentication is required. Please sign in and try again."
+          );
+        }
+        throw new Error(response.error || "Failed to get directions");
       }
-      
+
       // Show success message (the actual directions will open in a new tab)
-      showStatus('Opening Google Maps with directions...');
-      
+      showStatus("Opening Google Maps with directions...");
     } catch (error) {
       console.error("Error:", error);
-      showStatus(error.message || 'An error occurred', true);
+      showStatus(error.message || "An error occurred", true);
     } finally {
       // Clean up the button
       if (googleMapsButton) {
@@ -159,11 +187,4 @@ document.addEventListener("mouseup", (e) => {
   });
 
   document.body.appendChild(googleMapsButton);
-});
-
-// Close panel when clicking outside
-document.addEventListener('click', (e) => {
-  if (directionsPanel && !directionsPanel.contains(e.target)) {
-    directionsPanel.remove();
-  }
 });
