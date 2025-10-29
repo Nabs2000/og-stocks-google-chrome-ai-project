@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const button = document.getElementById('alertButton');
+    const button = document.getElementById('suggestMaps');
     
     button.addEventListener('click', () => {
         alert('Hello from your Chrome Extension!');

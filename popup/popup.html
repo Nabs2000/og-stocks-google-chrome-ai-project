@@ -1,15 +1,29 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>My Popup</title>
     <style>
-        body { width: 200px; height: 100px; padding: 10px; }
-        button { width: 100%; padding: 10px; }
+      body {
+        width: 200px;
+        height: 100px;
+        padding: 10px;
+      }
+      button {
+        width: 100%;
+        padding: 10px;
+      }
+      .icon {
+        width: 20px;
+        height: 20px;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <h1>Hello World!</h1>
-    <button id="alertButton">Click for Alert</button>
+    <button id="suggestMaps">
+      Suggest Directions
+      <img class="icon" src="../images/gmaps_icon.png" alt="Maps" />
+    </button>
     <script src="popup.js"></script>
-</body>
+  </body>
 </html>
