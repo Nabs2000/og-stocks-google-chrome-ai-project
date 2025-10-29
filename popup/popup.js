@@ -49,18 +49,6 @@ async function summarizeText(text) {
       }, 3000);
     };
 
-
-    document.getElementById("saveBtn").onclick = async () => {
-      const savedSummaries = (await chrome.storage.local.get("summaries")).summaries || [];
-      savedSummaries.unshift({
-        text,
-        summary: summaryOutput.innerText,
-        timestamp: new Date().toLocaleString(),
-      });
-      await chrome.storage.local.set({ summaries: savedSummaries.slice(0, 10) }); // keep last 10
-      alert("Summary saved!");
-    };
-
   } catch (err) {
     console.error(err);
     document.getElementById("summaryOutput").textContent =
