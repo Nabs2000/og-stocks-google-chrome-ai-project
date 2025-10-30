@@ -1,7 +1,7 @@
 let googleMapsButton = null;
 let statusPanel = null;
 
-function showStatus(message, isError = false) {
+function showStatus(message, isError = false, { persist = false } = {}) {
   // Remove existing panel if any
   if (statusPanel) statusPanel.remove();
 
@@ -67,7 +67,13 @@ function showStatus(message, isError = false) {
     padding: 0;
     line-height: 1;
   `;
-  closeButton.onclick = () => statusPanel.remove();
+  closeButton.onclick = (e) => {
+    e.stopPropagation();
+    if (statusPanel) {
+      statusPanel.remove();
+      statusPanel = null;
+    }
+  };
 
   // Assemble the panel
   statusPanel.appendChild(icon);
@@ -76,9 +82,12 @@ function showStatus(message, isError = false) {
   document.body.appendChild(statusPanel);
 
   // Auto-remove after 5 seconds for non-error messages
-  if (!isError) {
+  if (!persist && !isError) {
     setTimeout(() => {
-      if (statusPanel) statusPanel.remove();
+      if (statusPanel) {
+        statusPanel.remove();
+        statusPanel = null;
+      }
     }, 5000);
   }
 }
@@ -132,7 +141,7 @@ document.addEventListener("mouseup", (e) => {
       if (!selectedText) return;
       console.log("Selected text:", selectedText);
       // Show loading message
-      showStatus("Analyzing text for locations...");
+      showStatus("Analyzing text for locations...", false, { persist: true });
 
       // First check if user is authenticated
       const authCheck = await chrome.runtime.sendMessage({
@@ -156,7 +165,7 @@ document.addEventListener("mouseup", (e) => {
 
       console.log("User is authenticated");
 
-      showStatus("Getting directions...");
+      showStatus("Getting directions...", false, { persist: true });
 
       // Now get directions
       const response = await chrome.runtime.sendMessage({
@@ -175,7 +184,9 @@ document.addEventListener("mouseup", (e) => {
       }
 
       // Show success message (the actual directions will open in a new tab)
-      showStatus("Opening Google Maps with directions...");
+      showStatus("Opening Google Maps with directions...", false, {
+        persist: true,
+      });
     } catch (error) {
       console.error("Error:", error);
       showStatus(error.message || "An error occurred", true);
