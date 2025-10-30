@@ -2,7 +2,8 @@ async function summarizeText(text) {
   document.getElementById("summaryOutput").textContent = "Summarizing...";
   const spinner = document.getElementById("loadingSpinner");
   spinner.classList.remove("hidden");
-  document.getElementById("summaryOutput").innerText = "";
+
+  document.getElementById("summaryOutput").classList.remove("hidden");
 
   try {
     const response = await chrome.runtime.sendMessage({
@@ -28,25 +29,12 @@ async function summarizeText(text) {
 
       await navigator.clipboard.writeText(summaryText);
 
-      const oldMsg = document.getElementById("copyMessage");
-      if (oldMsg) oldMsg.remove();
-
-      const msg = document.createElement("div");
-      msg.id = "copyMessage";
-      msg.textContent = "Copied!";
-      msg.style.color = "#34A853";
-      msg.style.fontSize = "13px";
-      msg.style.marginTop = "10px";
-      msg.style.transition = "opacity 0.3s ease";
-      msg.style.opacity = "1";
-
-      const buttonsContainer = document.getElementById("buttonsContainer") || summaryOutput.parentElement;
-      buttonsContainer.appendChild(msg);
+      const feedback = document.getElementById("copyFeedback");
+      feedback.classList.remove("hidden");
 
       setTimeout(() => {
-        msg.style.opacity = "0";
-        setTimeout(() => msg.remove(), 300);
-      }, 3000);
+        feedback.classList.add("hidden");
+      }, 3000); 
     };
 
   } catch (err) {
@@ -81,14 +69,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     .getElementById("summarizeBtn")
     .addEventListener("click", handleSummarizeClick);
 
-  const { lastSelection } = await chrome.storage.local.get("lastSelection");
-
-  if (lastSelection) {
-
-    document.getElementById("summaryOutput").textContent =
-      "Summarizing your last selection...";
-    await summarizeText(lastSelection);
-
-    await chrome.storage.local.remove("lastSelection");
-  }
+  document.getElementById("summaryOutput").textContent = ""; 
+  document.getElementById("summaryOutput").classList.add("hidden");
 });

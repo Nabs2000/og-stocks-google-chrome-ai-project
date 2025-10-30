@@ -20,7 +20,7 @@
     "service_worker": "summarize/background.js"
   },
   "side_panel": {
-    "default_path": "sidepanel.html"
+    "default_path": "panel/sidepanel.html"
   },
   "content_scripts": [
     {

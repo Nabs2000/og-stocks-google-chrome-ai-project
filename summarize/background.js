@@ -18,10 +18,10 @@ async function summarizeBuiltIn(text) {
   return summary;
 }
 
-// Listen for messages from the popup
-chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-  (async () => {
-    if (message?.type === "TEXT_SELECTED") {
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  
+  if (message?.type === "TEXT_SELECTED") {
+    (async () => {
       try {
         const summary = await summarizeBuiltIn(message.text);
         sendResponse({ ok: true, summary });
@@ -29,18 +29,27 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
         console.error("Error occured:", e);
         sendResponse({ ok: false, summary: "Built-In Summarizer not supported" });
       }
-    }
-  })();
+    })();
 
-  // IMPORTANT: keep the message channel open for async sendResponse's
-  return true;
-});
+    // IMPORTANT: keep the message channel open for async sendResponse's
+    return true;
+  }
 
-chrome.runtime.onMessage.addListener((message) => {
   if (message?.type === "OPEN_SUMMARY_POPUP") {
-    // Try to open the popup programmatically
     chrome.action.openPopup().catch((err) => {
       console.warn("Could not open popup automatically:", err);
     });
+    // This is synchronous, no 'return true' needed
   }
+
+  if (message?.type === "OPEN_SUMMARY_SIDEPANEL") {
+    if (sender.tab?.id) {
+      chrome.sidePanel.open({ tabId: sender.tab.id });
+    } else {
+      console.warn("Could not open side panel, sender.tab.id is missing.");
+    }
+    // This is synchronous, no 'return true' needed
+  }
+
+  // If none of the 'if' blocks matched, we don't need to do anything.
 });

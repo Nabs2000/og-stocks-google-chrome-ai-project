@@ -64,9 +64,8 @@ document.addEventListener("mouseup", (e) => {
         return;
       }
 
-      // Ask background script to open the popup
       try {
-        await chrome.runtime.sendMessage({ type: "OPEN_SUMMARY_POPUP" });
+        await chrome.runtime.sendMessage({ type: "OPEN_SUMMARY_SIDEPANEL" });
       } catch (messageError) {
         console.error('Error sending message to background:', messageError);
         if (messageError.message.includes('context invalidated')) {
@@ -75,7 +74,6 @@ document.addEventListener("mouseup", (e) => {
         return;
       }
     } finally {
-      // Always clean up the button
       if (summarizeBtn) {
         summarizeBtn.remove();
         summarizeBtn = null;
