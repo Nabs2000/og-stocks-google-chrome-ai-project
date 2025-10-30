@@ -15,7 +15,7 @@ async function authenticate() {
         if (chrome.runtime.lastError) {
           reject(new Error(chrome.runtime.lastError.message));
         } else if (!token) {
-          reject(new Error('Authentication failed'));
+          reject(new Error("Authentication failed"));
         } else {
           resolve(token);
         }
@@ -23,7 +23,7 @@ async function authenticate() {
     });
     return { success: true, token };
   } catch (error) {
-    console.error('Authentication error:', error);
+    console.error("Authentication error:", error);
     return { success: false, error: error.message };
   }
 }
@@ -33,25 +33,27 @@ async function extractLocationsWithAI(text) {
   try {
     const trimmedText = text.trim();
     if (!trimmedText) {
-      throw new Error('No text provided to analyze');
+      throw new Error("No text provided to analyze");
     }
 
     // Check if the LanguageModel API is available
     const availability = await LanguageModel.availability();
-    if (availability === 'unavailable') {
-      throw new Error('Language model is not available. Please try again later.');
+    if (availability === "unavailable") {
+      throw new Error(
+        "Language model is not available. Please try again later."
+      );
     }
 
     // Create a session with the LanguageModel
     const session = await LanguageModel.create({
       initialPrompts: [
         {
-          role: 'system',
+          role: "system",
           content: `You are a helpful assistant that extracts location information from text.
           The user has selected some text and wants to get directions to a location mentioned in it.
           
           Your task is to analyze the text and extract the most likely destination location.
-          The destination should be a specific address, place name, or point of interest.
+          The destination should be a specific address, place name, or point of interest. There may be multiple locations mentioned in the text, but only the most specific one should be extracted.
           
           Respond with a JSON object with the following structure:
           {
@@ -65,17 +67,17 @@ async function extractLocationsWithAI(text) {
             "destination": null,
             "confidence": "none",
             "reason": "Explanation of why no destination could be determined"
-          }`
-        }
+          }`,
+        },
       ],
       // Use default parameters for temperature and topK
       temperature: 0.2, // Lower temperature for more focused results
-      topK: 40
+      topK: 40,
     });
 
     // Send the prompt to the model
     const response = await session.prompt(trimmedText);
-    
+
     // Try to parse the response as JSON
     let result;
     try {
@@ -83,38 +85,40 @@ async function extractLocationsWithAI(text) {
       const jsonMatch = response.match(/\{[\s\S]*\}/);
       result = jsonMatch ? JSON.parse(jsonMatch[0]) : JSON.parse(response);
     } catch (e) {
-      throw new Error('Failed to parse AI response');
+      throw new Error("Failed to parse AI response");
     }
 
     // Validate the response
-    if (!result || typeof result !== 'object') {
-      throw new Error('Invalid response from AI service');
+    if (!result || typeof result !== "object") {
+      throw new Error("Invalid response from AI service");
     }
 
-    if (!result.destination || result.confidence === 'none') {
-      throw new Error("Couldn't determine a clear destination from the selected text. Please try selecting more specific text or a clear location.");
+    if (!result.destination || result.confidence === "none") {
+      throw new Error(
+        "Couldn't determine a clear destination from the selected text. Please try selecting more specific text or a clear location."
+      );
     }
 
-    console.log('AI location extraction result:', {
+    console.log("AI location extraction result:", {
       destination: result.destination,
       confidence: result.confidence,
-      reason: result.reason
+      reason: result.reason,
     });
 
     return {
       origin: null, // Let Google Maps use current location
       destination: result.destination,
       confidence: result.confidence,
-      reason: result.reason
+      reason: result.reason,
     };
   } catch (error) {
-    console.error('Error in extractLocationsWithAI:', error);
+    console.error("Error in extractLocationsWithAI:", error);
     // Fallback to using the original text if AI parsing fails
     return {
       origin: null,
       destination: text,
-      confidence: 'low',
-      reason: 'Using original text as fallback: ' + error.message
+      confidence: "low",
+      reason: "Using original text as fallback: " + error.message,
     };
   }
 }
@@ -162,57 +166,61 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         sendResponse({ authenticated });
         return true;
       }
-      
+
       if (message?.type === "AUTHENTICATE") {
         const result = await authenticate();
         sendResponse(result);
         return true;
       }
-      
+
       if (message?.type === "GET_DIRECTIONS") {
         // Check authentication first
         const authenticated = await isAuthenticated();
         if (!authenticated) {
-          sendResponse({ 
-            ok: false, 
-            error: 'Not authenticated',
-            requiresAuth: true 
+          sendResponse({
+            ok: false,
+            error: "Not authenticated",
+            requiresAuth: true,
           });
           return true;
         }
 
         try {
           // Extract locations from the selected text
-          const { origin, destination } = await extractLocationsWithAI(message.text);
-          
+          const { origin, destination } = await extractLocationsWithAI(
+            message.text
+          );
+
           if (!destination) {
-            throw new Error('Could not determine a destination from the selected text');
+            throw new Error(
+              "Could not determine a destination from the selected text"
+            );
           }
 
           // Build Google Maps URL
           const params = new URLSearchParams({
-            api: '1',
+            api: "1",
             destination: destination,
-            travelmode: 'driving'
+            travelmode: "driving",
           });
-          
+
           // Add origin only if we have it
           if (origin) {
-            params.append('origin', origin);
+            params.append("origin", origin);
           }
-          
+
           const mapsUrl = `https://www.google.com/maps/dir/?${params.toString()}`;
-          
+
           // Open in a new tab
           chrome.tabs.create({ url: mapsUrl });
-          
+
           sendResponse({ ok: true });
         } catch (error) {
           console.error("Error processing directions:", error);
-          sendResponse({ 
-            ok: false, 
+          sendResponse({
+            ok: false,
             error: error.message,
-            requiresAuth: error.message.includes('authentication')
+            requiresAuth: error.message.includes("authentication"),
           });
         }
         return true;
@@ -221,13 +229,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       // If we get here, the message type is not recognized
       sendResponse({
         ok: false,
-        error: `Unknown message type: ${message?.type}`
+        error: `Unknown message type: ${message?.type}`,
       });
     } catch (error) {
       console.error("Unexpected error in message handler:", error);
       sendResponse({
         ok: false,
-        error: error.message || "An unexpected error occurred"
+        error: error.message || "An unexpected error occurred",
       });
     }
   })();
