@@ -156,6 +156,8 @@ document.addEventListener("mouseup", (e) => {
 
       console.log("User is authenticated");
 
+      showStatus("Getting directions...");
+
       // Now get directions
       const response = await chrome.runtime.sendMessage({
         type: "GET_DIRECTIONS",
