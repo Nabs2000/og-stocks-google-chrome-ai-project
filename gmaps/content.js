@@ -183,9 +183,12 @@ document.addEventListener("mouseup", (e) => {
         throw new Error(response.error || "Failed to get directions");
       }
 
+      showStatus("Opening Google Maps with directions...", false, {
+        persist: false,
+      });
     } catch (error) {
       console.error("Error:", error);
-      showStatus(error.message || "An error occurred", true);
+      showStatus(error.message || "An error occurred", true, { persist: true });
     } finally {
       // Clean up the button
       if (googleMapsButton) {
