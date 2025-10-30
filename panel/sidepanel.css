@@ -43,6 +43,14 @@ button:hover {
   background-color: #0056b3;
 }
 
+#clearBtn {
+  background-color: #6c757d;
+}
+
+#clearBtn:hover {
+  background-color: #5a6268;
+}
+
 #copiedText {
   color: green;
   font-size: 14px;

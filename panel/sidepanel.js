@@ -2,8 +2,11 @@ async function summarizeText(text) {
   document.getElementById("summaryOutput").textContent = "Summarizing...";
 
   const copyBtn = document.getElementById("copyBtn");
+  const clearBtn = document.getElementById("clearBtn");
   const copyFeedback = document.getElementById("copiedText");
+
   if (copyBtn) copyBtn.classList.add("hidden");
+  if (clearBtn) clearBtn.classList.add("hidden");
   if (copyFeedback) copyFeedback.classList.add("hidden");
   
   try {
@@ -17,8 +20,9 @@ async function summarizeText(text) {
     
     summaryOutput.textContent = summary;
 
-    if (response?.summary && copyBtn) {
+    if (response?.summary && copyBtn && clearBtn) {
         copyBtn.classList.remove("hidden");
+        clearBtn.classList.remove("hidden");
     }
 
     copyBtn.onclick = async () => {
@@ -43,19 +47,38 @@ async function summarizeText(text) {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
+  const summaryOutput = document.getElementById("summaryOutput");
+  const copyBtn = document.getElementById("copyBtn");
+  const clearBtn = document.getElementById("clearBtn");
+  const copyFeedback = document.getElementById("copiedText");
+
+  clearBtn.addEventListener("click", () => {
+    summaryOutput.textContent =
+      "Highlight text on the page and click 'Summarize' to begin.";
+    copyBtn.classList.add("hidden");
+    clearBtn.classList.add("hidden");
+    copyFeedback.classList.add("hidden");
+  });
+
+  chrome.storage.onChanged.addListener(async (changes, namespace) => {
+    if (namespace === 'local' && changes.lastSelection?.newValue) {
+      const newText = changes.lastSelection.newValue;
+
+      await summarizeText(newText);
+
+      await chrome.storage.local.remove("lastSelection");
+    }
+  });
 
   const { lastSelection } = await chrome.storage.local.get("lastSelection");
 
   if (lastSelection) {
-    
-    document.getElementById("summaryOutput").textContent =
-      "Summarizing...";
-      
     await summarizeText(lastSelection);
-
     await chrome.storage.local.remove("lastSelection");
   } else {
-     document.getElementById("summaryOutput").textContent =
-      "No text was highlighted when the button was pressed. Highlight text and click the Summarize button to begin.";
+     summaryOutput.textContent =
+      "Highlight text on the page and click 'Summarize' to begin.";
+     copyBtn.classList.add("hidden");
+     clearBtn.classList.add("hidden");
   }
 });
