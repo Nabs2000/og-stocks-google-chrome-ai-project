@@ -151,7 +151,7 @@ async function getDirections(origin, destination) {
   const params = new URLSearchParams({
     api: "1",
     destination: destination,
-    travelmode: "driving"
+    travelmode: "driving",
   });
 
   // Add origin only if we have it
@@ -160,10 +160,10 @@ async function getDirections(origin, destination) {
   }
 
   const mapsUrl = `https://www.google.com/maps/dir/?${params.toString()}`;
-  
+
   // Log the action
-  console.log('Opening Google Maps with URL:', mapsUrl);
-  
+  console.log("Opening Google Maps with URL:", mapsUrl);
+
   // Open in a new tab
   chrome.tabs.create({ url: mapsUrl });
 
@@ -213,6 +213,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             throw new Error(errorMsg);
           }
 
+          // If the confidence is low, throw an error
+          if (confidence === "low") {
+            throw new Error(
+              "Could not determine a clear destination from the selected text. Please try selecting more specific text or a clear location."
+            );
+          }
+
           // Log extraction results
           console.log("Location extraction results:", {
             origin,
@@ -223,7 +230,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
           // Get and open directions
           console.log(`Opening directions to ${destination}...`);
-          
+
           const result = await getDirections(
             origin || "current location",
             destination
@@ -233,7 +240,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           console.log("Directions opened successfully", {
             origin: origin || "current location",
             destination,
-            url: result.url
+            url: result.url,
           });
 
           sendResponse({ ok: true, url: result.url });
