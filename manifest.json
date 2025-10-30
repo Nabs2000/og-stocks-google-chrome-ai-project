@@ -16,30 +16,45 @@
     "identity",
     "aiLanguageModelOriginTrial"
   ],
-  "optional_host_permissions": ["<all_urls>"],
+  "optional_host_permissions": [
+    "<all_urls>"
+  ],
   "oauth2": {
-    "client_id": "521658906047-6m7vvg2ntt1qg5ilnlv7csp8cveepdl1.apps.googleusercontent.com",
+    "client_id": "",
     "scopes": [
       "https://www.googleapis.com/auth/userinfo.email",
       "https://www.googleapis.com/auth/userinfo.profile"
     ]
   },
-  "host_permissions": ["https://maps.googleapis.com/*"],
+  "host_permissions": [
+    "https://maps.googleapis.com/*"
+  ],
   "background": {
     "service_worker": "gmaps/background.js"
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
-      "js": ["gmaps/content.js"],
-      "css": ["gmaps/content.css"]
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "gmaps/content.js"
+      ],
+      "css": [
+        "gmaps/content.css"
+      ]
     }
   ],
   "options_page": "options/options.html",
   "web_accessible_resources": [
     {
-      "resources": ["*.woff2", "*.ttf"],
-      "matches": ["<all_urls>"],
+      "resources": [
+        "*.woff2",
+        "*.ttf"
+      ],
+      "matches": [
+        "<all_urls>"
+      ],
       "use_dynamic_url": true
     }
   ]
