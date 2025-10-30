@@ -30,6 +30,9 @@ async function authenticate() {
 
 // Function to extract locations using AI
 async function extractLocationsWithAI(text) {
+  console.log("Analyzing text for locations...");
+  const startTime = Date.now();
+
   try {
     const trimmedText = text.trim();
     if (!trimmedText) {
@@ -112,49 +115,61 @@ async function extractLocationsWithAI(text) {
       reason: result.reason,
     };
   } catch (error) {
-    console.error("Error in extractLocationsWithAI:", error);
-    // Fallback to using the original text if AI parsing fails
+    const errorMessage = `Error extracting locations: ${error.message}`;
+    console.error(errorMessage);
     return {
       origin: null,
-      destination: text,
+      destination: text.trim(),
       confidence: "low",
       reason: "Using original text as fallback: " + error.message,
     };
+  } finally {
+    const duration = Date.now() - startTime;
+    console.log(`Location extraction completed in ${duration}ms`);
+  }
+}
+
+// Simple console logging functions to replace the panel updates
+function logStatus(status, message) {
+  console.log(`[${status.toUpperCase()}] ${message}`);
+}
+
+function logDebug(message, data = null) {
+  if (data) {
+    console.log(message, data);
+  } else {
+    console.log(message);
   }
 }
 
 // Function to get directions from Google Maps
 async function getDirections(origin, destination) {
-  const data = await chrome.storage.local.get("GOOGLE_MAPS_API_KEY");
-  const API_KEY = data.GOOGLE_MAPS_API_KEY || "";
+  console.log(`Getting directions from ${origin} to ${destination}`);
+  const startTime = Date.now();
 
-  if (!API_KEY) {
-    throw new Error(
-      "No Google Maps API key found. Please set it in the extension options."
-    );
+  // Build Google Maps URL
+  const params = new URLSearchParams({
+    api: "1",
+    destination: destination,
+    travelmode: "driving"
+  });
+
+  // Add origin only if we have it
+  if (origin && origin !== "current location") {
+    params.append("origin", origin);
   }
 
-  const response = await fetch(
-    `https://maps.googleapis.com/maps/api/directions/json?origin=${encodeURIComponent(
-      origin
-    )}&destination=${encodeURIComponent(destination)}&key=${API_KEY}`
-  );
+  const mapsUrl = `https://www.google.com/maps/dir/?${params.toString()}`;
+  
+  // Log the action
+  console.log('Opening Google Maps with URL:', mapsUrl);
+  
+  // Open in a new tab
+  chrome.tabs.create({ url: mapsUrl });
 
-  if (!response.ok) {
-    throw new Error(`Google Maps API error: ${response.status}`);
-  }
-
-  const result = await response.json();
-
-  if (result.status !== "OK") {
-    throw new Error(
-      `Google Maps API error: ${result.status} - ${
-        result.error_message || "Unknown error"
-      }`
-    );
-  }
-
-  return result;
+  const duration = Date.now() - startTime;
+  console.log(`Directions opened in ${duration}ms`);
+  return { success: true, url: mapsUrl };
 }
 
 // Listen for messages from the content script
@@ -187,34 +202,41 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
         try {
           // Extract locations from the selected text
-          const { origin, destination } = await extractLocationsWithAI(
-            message.text
-          );
+          console.log("Extracting locations from text...");
+          const { origin, destination, confidence, reason } =
+            await extractLocationsWithAI(message.text);
 
           if (!destination) {
-            throw new Error(
-              "Could not determine a destination from the selected text"
-            );
+            const errorMsg =
+              "Could not determine a destination from the selected text";
+            console.error(errorMsg);
+            throw new Error(errorMsg);
           }
 
-          // Build Google Maps URL
-          const params = new URLSearchParams({
-            api: "1",
-            destination: destination,
-            travelmode: "driving",
+          // Log extraction results
+          console.log("Location extraction results:", {
+            origin,
+            destination,
+            confidence,
+            reason,
           });
 
-          // Add origin only if we have it
-          if (origin) {
-            params.append("origin", origin);
-          }
+          // Get and open directions
+          console.log(`Opening directions to ${destination}...`);
+          
+          const result = await getDirections(
+            origin || "current location",
+            destination
+          );
 
-          const mapsUrl = `https://www.google.com/maps/dir/?${params.toString()}`;
+          // Log successful directions
+          console.log("Directions opened successfully", {
+            origin: origin || "current location",
+            destination,
+            url: result.url
+          });
 
-          // Open in a new tab
-          chrome.tabs.create({ url: mapsUrl });
-
-          sendResponse({ ok: true });
+          sendResponse({ ok: true, url: result.url });
         } catch (error) {
           console.error("Error processing directions:", error);
           sendResponse({
