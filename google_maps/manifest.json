@@ -1,0 +1,45 @@
+{
+  "manifest_version": 3,
+  "name": "Clipboard AI",
+  "version": "1.0",
+  "description": "Your all-around Chrome extension for summarizing Breezy lyrics :D",
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "OG Stocks"
+  },
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "contextMenus",
+    "storage",
+    "geolocation",
+    "identity",
+    "aiLanguageModelOriginTrial"
+  ],
+  "optional_host_permissions": ["<all_urls>"],
+  "oauth2": {
+    "scopes": [
+      "https://www.googleapis.com/auth/userinfo.email",
+      "https://www.googleapis.com/auth/userinfo.profile"
+    ]
+  },
+  "host_permissions": ["https://maps.googleapis.com/*"],
+  "background": {
+    "service_worker": "gmaps/background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["gmaps/content.js", "summarize/content.js"],
+      "css": ["gmaps/content.css", "summarize/content.css"]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["*.woff2", "*.ttf"],
+      "matches": ["<all_urls>"],
+      "use_dynamic_url": true
+    }
+  ]
+}
+
