@@ -21,7 +21,6 @@ async function summarizeText(text) {
 
     actionsDiv.classList.remove("hidden");
 
-    const copyFeedback = document.getElementById("copyFeedback");
 
     document.getElementById("copyBtn").onclick = async () => {
       const summaryText = summaryOutput.innerText.trim();
