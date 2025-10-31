@@ -1,11 +1,17 @@
-window.onload = function() {
-  document.querySelector('button').addEventListener('click', async function() {
+
+
+
+  document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('oauth').addEventListener('click', async function() {
+    console.log("clicked");
     try {
       // Request the OAuth token
       const token = await new Promise((resolve, reject) => {
+        console.log("inside promise");
         chrome.identity.getAuthToken(
           { interactive: true },
           (token) => {
+            console.log("Iniside the anonymous")
             if (chrome.runtime.lastError) {
               reject(new Error(chrome.runtime.lastError.message));
             } else if (!token) {
@@ -25,4 +31,4 @@ window.onload = function() {
       alert('Authentication failed: ' + error.message);
     }
   });
-};
+  });

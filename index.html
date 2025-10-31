@@ -2,16 +2,17 @@
   <head>
     <title>FriendBlock</title>
     <script type="text/javascript" src="oauth.js"></script>
+    <script type="text/javascript" src="calendar-api.js"></script>
     <style>
       button {
         padding: 10px;
-        background-color: #3C79F8;
-        display: inline-block;
+        border: 1px solid black;
       }
     </style>
   </head>
   <body>
-    <button>FriendBlock Contacts</button>
+    <button id="list-events">List Events</button>
+    <button id="oauth">Get key</button>
     <div id="friendDiv"></div>
   </body>
 </html>
