@@ -13,7 +13,8 @@
     "contextMenus",
     "storage",
     "geolocation",
-    "identity"
+    "identity",
+    "aiLanguageModelOriginTrial"
   ],
   "optional_host_permissions": ["<all_urls>"],
   "oauth2": {
