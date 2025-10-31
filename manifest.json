@@ -13,28 +13,21 @@
     "contextMenus",
     "storage",
     "geolocation",
-    "identity",
-    "aiLanguageModelOriginTrial"
+    "identity"
   ],
-  "optional_host_permissions": [
-    "<all_urls>"
-  ],
+  "optional_host_permissions": ["<all_urls>"],
   "oauth2": {
-    "client_id": "",
     "scopes": [
       "https://www.googleapis.com/auth/userinfo.email",
       "https://www.googleapis.com/auth/userinfo.profile"
     ]
   },
-  "host_permissions": [
-    "https://maps.googleapis.com/*"
-  ],
+  "host_permissions": ["https://maps.googleapis.com/*"],
   "background": {
     "service_worker": "gmaps/background.js"
   },
   "content_scripts": [
     {
-<<<<<<< HEAD
       "matches": ["<all_urls>"],
       "js": ["gmaps/content.js", "summarize/content.js"],
       "css": ["gmaps/content.css", "summarize/content.css"]
@@ -42,13 +35,8 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": [
-        "*.woff2",
-        "*.ttf"
-      ],
-      "matches": [
-        "<all_urls>"
-      ],
+      "resources": ["*.woff2", "*.ttf"],
+      "matches": ["<all_urls>"],
       "use_dynamic_url": true
     }
   ]
