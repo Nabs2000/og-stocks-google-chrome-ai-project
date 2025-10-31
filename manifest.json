@@ -26,6 +26,7 @@
   "host_permissions": ["https://maps.googleapis.com/*"],
   "background": {
     "service_worker": "gmaps/background.js"
+    "service_worker": "gmaps/background.js"
   },
   "content_scripts": [
     {
@@ -42,3 +43,4 @@
     }
   ]
 }
+
