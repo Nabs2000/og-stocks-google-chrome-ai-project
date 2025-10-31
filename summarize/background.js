@@ -26,7 +26,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         const summary = await summarizeBuiltIn(message.text);
         sendResponse({ ok: true, summary });
       } catch (e) {
-        console.error("Error occured:", e);
+        console.error("Error occurred:", e);
         sendResponse({ ok: false, summary: "Built-In Summarizer not supported" });
       }
     })();
