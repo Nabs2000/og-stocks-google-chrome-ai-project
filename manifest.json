@@ -8,19 +8,27 @@
     "default_popup": "popup/popup.html",
     "default_title": "Click Me!"
   },
+  "options_page": "options/options.html",
   "permissions": [
     "activeTab",
     "scripting",
     "contextMenus",
-    "storage"
+    "storage",
+    "sidePanel"
   ],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "summarize/background.js"
+  },
+  "side_panel": {
+    "default_path": "panel/sidepanel.html"
   },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content.js"]
+      "js": ["summarize/content.js"]
     }
+  ],
+  "host_permissions": [
+    "https://generativelanguage.googleapis.com/*"
   ]
 }
