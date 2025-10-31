@@ -1,0 +1,9 @@
+# Local env files
+.env
+
+# Node / build artifacts (if any)
+node_modules/
+dist/
+
+# macOS
+.DS_Store
