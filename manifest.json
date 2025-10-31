@@ -8,7 +8,6 @@
     "default_popup": "popup/popup.html",
     "default_title": "Click Me!"
   },
-  "options_page": "options/options.html",
   "permissions": [
     "activeTab",
     "scripting",
