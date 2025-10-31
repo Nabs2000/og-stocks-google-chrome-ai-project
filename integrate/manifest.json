@@ -1,0 +1,68 @@
+{
+  "manifest_version": 3,
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0YU4kAwxG/2S965aeH/bZbnFWZWWi9k94FK/MCa7fM/C+p+dKX2AS3D2dWG39Z4yduYTYjhoBv7nPDIby7ItBKkNzrvRalSIFgfWfFx3pdfmkDEeak7HtiQrofjhMDUxBltDvWRviqYtzJGL7fPVV5Lyr1sXESiURnZebpA2qb9puJp08nmPnDilcJwBBOgmE5vrmTLAcdFQ0JRUnC3WsKlD3biDB16ODooCCLrmR7/h5mMtwZ4USLa7L4U9wrxxu5wP7NqDRjutNFknXwnuaAjnbUs7Sz6nf0GqWdz9M821jyz3hRSgQFrxlUk9kFQ0N4lBFXYH8N39m/5WQesS+QIDAQAB",
+  "name": "Clipboard AI",
+  "version": "1.0",
+  "description": "Your all-around Chrome extension for summarizing and getting directions.",
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "OG Stocks"
+  },
+  
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "contextMenus",
+    "storage",
+    "geolocation",
+    "identity",
+    "aiLanguageModelOriginTrial",
+    "sidePanel"
+  ],
+
+  "optional_host_permissions": [
+    "<all_urls>"
+  ],
+
+  "host_permissions": [
+    "https://maps.googleapis.com/*",
+    "https://generativelanguage.googleapis.com/*"
+  ],
+
+  "oauth2": {
+    "client_id": "521658906047-6m7vvg2ntt1qg5ilnlv7csp8cveepdl1.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/userinfo.email",
+      "https://www.googleapis.com/auth/userinfo.profile"
+    ]
+  },
+
+  "background": {
+    "service_worker": "background.js"
+  },
+
+  "side_panel": {
+    "default_path": "panel/sidepanel.html"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["content.css"]
+    }
+  ],
+  
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "*.woff2",
+        "*.ttf"
+      ],
+      "matches": [
+        "<all_urls>"
+      ],
+      "use_dynamic_url": true
+    }
+  ]
+}
