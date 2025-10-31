@@ -29,11 +29,10 @@ async function summarizeText(text) {
 
       await navigator.clipboard.writeText(summaryText);
 
-      const feedback = document.getElementById("copyFeedback");
-      feedback.classList.remove("hidden");
+      copyFeedback.classList.remove("hidden");
 
       setTimeout(() => {
-        feedback.classList.add("hidden");
+        copyFeedback.classList.add("hidden");
       }, 3000); 
     };
 
