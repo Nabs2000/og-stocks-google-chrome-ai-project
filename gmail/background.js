@@ -12,7 +12,7 @@ chrome.runtime.onInstalled.addListener(async () => {
   });
 });
 
-async function draftEmailWithAI(selectedText) {
+async function draftEmailWithAI(selectedText, purpose, tone) {
   const getSubjectFromText = (text) => {
     const subjectRegex = /Subject:\s+(.*)/;
     if (subjectRegex.test(text)) {
@@ -40,14 +40,13 @@ async function draftEmailWithAI(selectedText) {
   if ("Writer" in self) {
     const writerOptions = {
       shardContext: "This is an email based on the highlighted text.",
-      tone: "formal",
+      tone: tone,
       format: "plain-text",
       length: "medium",
     };
 
     try {
       let writer = null;
-      console.log("Writer API is available.");
       const availability = await Writer.availability();
       console.log("Writer availability: ", availability);
       // Request user activation for downloading the model if needed
@@ -70,8 +69,7 @@ async function draftEmailWithAI(selectedText) {
       if (writer) {
         // Show spinner in content script
         const email = await writer.write(
-          "Compose a professional email based on the following text: " +
-            selectedText
+          `Compose an email for the following purpose: ${purpose}. Here is the context:${selectedText}`
         );
 
         const subject = getSubjectFromText(email);
@@ -92,10 +90,28 @@ async function draftEmailWithAI(selectedText) {
 
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   if (info.menuItemId === "highlightAction") {
-    chrome.scripting.executeScript({
+    await chrome.scripting.executeScript({
       target: { tabId: tab.id },
-      func: draftEmailWithAI,
-      args: [info.selectionText],
+      files: ["gmail/content.js"],
+    });
+    chrome.tabs.sendMessage(tab.id, {
+      type: "SHOW_POPUP",
+      selectedText: info.selectionText,
     });
   }
 });
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === "GENERATE_EMAIL") {
+    const { selectedText, purpose, tone } = message;
+    console.log("Generating email for purpose:", purpose);
+    chrome.scripting.executeScript({
+      target: { tabId: sender.tab.id },
+      func: draftEmailWithAI,
+      args: [selectedText, purpose],
+    });
+    sendResponse({ status: "ok" });
+  }
+});
+
+

@@ -17,9 +17,6 @@
       "js": ["gmail/content.js"]
     }
   ],
-  "icons": {
-    "128": "icons/icon128.png"
-  },
   "trial_tokens": [
     "AvcvaQJsqGb5YlGFofidna5MmPA1ur3EHJUrPRiMJE4IffmArgWKOvjpqsd13HbfCsIQs9H5dnkZYNzJbEg7lgkAAABseyJvcmlnaW4iOiJjaHJvbWUtZXh0ZW5zaW9uOi8va2pva21janBoaHBhbWZsYmZiYm5mYm9iYmhtamJjY2ciLCJmZWF0dXJlIjoiQUlXcml0ZXJBUEkiLCJleHBpcnkiOjE3Njk0NzIwMDB9"
   ]
