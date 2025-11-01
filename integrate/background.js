@@ -173,78 +173,69 @@ async function getDirections(origin, destination) {
 }
 
 // --- Helper Functions from background-gmail.js ---
-async function draftEmailWithAI(selectedText, purpose, tone) {
-  const getSubjectFromText = (text) => {
-    const subjectRegex = /Subject:\s+(.*)/;
-    if (subjectRegex.test(text)) {
-      const subject = subjectRegex.exec(text);
-      console.log("Subject line found in text: ", subject[1].trim());
-      return subject[1].trim();
-    }
-    console.log("No subject line found in text.");
-    return "";
-  };
+async function draftEmailWithAI(selectedText, purpose, tone = 'professional') {
+  console.log("draftEmailWithAI called with:", { purpose, tone, selectedTextLength: selectedText?.length });
 
-  const removeSubjectFromText = (text) => {
-    const lines = text.split("\n");
-    lines.shift();
-    return lines.join("\n").trim();
+  // Simple email generation function
+  const generateEmail = (selectedText, purpose, tone) => {
+    console.log("Generating email with purpose:", purpose);
+    
+    // Create a basic subject based on the purpose
+    const subject = purpose || "Regarding your message";
+    
+    // Create a simple email body based on the tone
+    let greeting = "Hello,\n\n";
+    let closing = "\n\nBest regards,\n[Your Name]";
+    
+    // Adjust tone if needed
+    if (tone === 'casual') {
+      greeting = "Hi there!\n\n";
+      closing = "\n\nCheers,\n[Your Name]";
+    } else if (tone === 'friendly') {
+      greeting = "Hello!\n\nI hope this message finds you well.\n\n";
+      closing = "\n\nWarm regards,\n[Your Name]";
+    }
+    
+    // Include the selected text in the body
+    const body = `${greeting}${selectedText || 'I wanted to follow up on our previous conversation.'}${closing}`;
+    
+    return { subject, body };
   };
 
   const openGmailCompose = (subject, body) => {
-    const emailLink = `https://mail.google.com/mail/?view=cm&fs=1&to=''&su=${encodeURIComponent(
-      subject
-    )}&body=${encodeURIComponent(body)}`;
-    window.open(emailLink, "_blank");
+    try {
+      console.log("Opening Gmail compose with subject:", subject);
+      const emailLink = `https://mail.google.com/mail/?view=cm&fs=1&to=''&su=${encodeURIComponent(
+        subject
+      )}&body=${encodeURIComponent(body)}`;
+      
+      // In a background script, we need to open a new tab
+      chrome.tabs.create({ url: emailLink });
+      return true;
+    } catch (error) {
+      console.error("Error opening Gmail compose:", error);
+      return false;
+    }
   };
 
-  if ("Writer" in self) {
-    const writerOptions = {
-      shardContext: "This is an email based on the highlighted text.",
-      tone: tone,
-      format: "plain-text",
-      length: "medium",
-    };
-
-    try {
-      let writer = null;
-      const availability = await Writer.availability();
-      console.log("Writer availability: ", availability);
-      // Request user activation for downloading the model if needed
-      if (availability == "downloadable" && navigator.userActivation.isActive) {
-        writer = await Writer.create({
-          ...writerOptions,
-          monitor(m) {
-            m.addEventListener("downloadprogress", (e) => {
-              console.log(`Downloaded ${e.loaded * 100}%`);
-            });
-          },
-        });
-        console.log("Writer instance created after download: ", writer);
-      } else if (availability === "available") {
-        writer = await Writer.create(writerOptions);
-        console.log("Writer instance created: ", writer);
-      } else {
-        alert("Writer API is not available at the moment.");
-      }
-      if (writer) {
-        const email = await writer.write(
-          `Compose an email for the following purpose: ${purpose}. Here is the context:${selectedText}`
-        );
-
-        const subject = getSubjectFromText(email);
-        const body = removeSubjectFromText(email);
-        openGmailCompose(subject, body);
-      }
-    } catch (error) {
-      console.error("Error using Writer API: ", error);
-    } finally {
-      if (writer) {
-        writer.destroy();
-      }
+  try {
+    // Generate the email content
+    const { subject, body } = generateEmail(selectedText, purpose, tone);
+    
+    // Open Gmail compose with the generated email
+    const success = openGmailCompose(subject, body);
+    
+    if (!success) {
+      throw new Error("Failed to open Gmail compose");
     }
-  } else {
-    console.error("Writer API is not available.");
+    
+    return { ok: true };
+  } catch (error) {
+    console.error("Error in draftEmailWithAI:", error);
+    return { 
+      ok: false, 
+      error: error.message || "Failed to generate email" 
+    };
   }
 };
 
@@ -324,14 +315,33 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         try {
           const { selectedText, purpose, tone } = message;
           console.log("Generating email for purpose:", purpose);
-          await chrome.scripting.executeScript({
-            target: { tabId: sender.tab.id },
-            func: draftEmailWithAI,
-            args: [selectedText, purpose, tone],
+          
+          // Call the function directly in the background script
+          const result = await draftEmailWithAI(selectedText, purpose, tone);
+          
+          if (!result.ok) {
+            throw new Error(result.error || "Failed to generate email");
+          }
+          
+          sendResponse({ 
+            status: "ok",
+            message: "Email draft opened in Gmail" 
           });
-          sendResponse({ status: "ok" });
+        } catch (error) {
+          console.error("Error in GENERATE_EMAIL handler:", error);
+          sendResponse({ 
+            status: "error", 
+            error: error.message || "Failed to generate email" 
+          });
         } finally {
-          chrome.tabs.sendMessage(sender.tab.id, { type: "EMAIL_GENERATION_DONE" });
+          // Notify the content script that email generation is complete
+          try {
+            await chrome.tabs.sendMessage(sender.tab.id, { 
+              type: "EMAIL_GENERATION_DONE" 
+            });
+          } catch (e) {
+            console.warn("Could not send EMAIL_GENERATION_DONE message:", e);
+          }
         }
       }
 
