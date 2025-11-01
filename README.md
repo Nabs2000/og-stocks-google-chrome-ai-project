@@ -10,14 +10,7 @@ A powerful Chrome extension that enhances your clipboard with AI capabilities, m
 - Cross-device synchronization (coming soon)
 - Customizable keyboard shortcuts
 
-## 🚀 Installation
-
-### Prerequisites
-- Google Chrome (version 88 or later)
-- Node.js (v14 or later) - for development
-- npm or yarn - for development
-
-### Load the Extension
+## 📝 Steps to Use the Extension
 
 1. Open Chrome and navigate to `chrome://extensions/`
 2. Enable **Developer mode** using the toggle in the top-right corner
