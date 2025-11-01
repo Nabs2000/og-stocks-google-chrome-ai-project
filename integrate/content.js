@@ -229,23 +229,43 @@ function createGmailPopup(selectedText) {
   popup.id = "ai-email-popup";
   popup.innerHTML = `
     <div class="popup-container">
-      <h3>Clipboard AI: Genearate an email</h3>
-      <p><strong>Selected text:</strong></p>
-      <label>What is this email for?</label>
-      <input id="email-purpose" placeholder="e.g., Job application, follow-up, etc." />
-      <label for="email-tone">Tone</label>
-      <select id="email-tone">
-        <option value="formal">Formal(default)</option>
-        <option value="neutral">Neutral</option>
-        <option value="casual">Casual</option>
-      </select>
-      <div class="popup-buttons">
-        <button id="cancel-btn">Cancel</button>
-        <button id="generate-btn">Generate</button>
+      <div class="popup-header">
+        <h3><i class="fas fa-envelope"></i> Generate Email</h3>
+        <button class="popup-close" id="close-btn">&times;</button>
       </div>
-      <div id="popup-loader" style="display:none;">
+      <div class="popup-content">
+        <div class="form-group">
+          <label for="email-purpose">What is this email for?</label>
+          <input type="text" id="email-purpose" class="form-control" placeholder="e.g., Job application, follow-up, etc." required>
+        </div>
+        
+        <div class="form-group">
+          <label for="email-tone">Tone</label>
+          <select id="email-tone" class="form-control">
+            <option value="formal">Formal (default)</option>
+            <option value="neutral">Neutral</option>
+            <option value="casual">Casual</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label>Selected Text</label>
+          <div class="selected-text-preview">${selectedText || 'No text selected'}</div>
+        </div>
+      </div>
+      
+      <div class="popup-footer">
+        <button id="cancel-btn" class="btn btn-secondary">
+          <i class="fas fa-times"></i> Cancel
+        </button>
+        <button id="generate-btn" class="btn btn-primary">
+          <i class="fas fa-magic"></i> Generate Email
+        </button>
+      </div>
+      
+      <div id="popup-loader">
         <div class="spinner"></div>
-        <p>Generating email...</p>
+        <p>Generating your email...</p>
       </div>
     </div>
   `;
@@ -254,9 +274,21 @@ function createGmailPopup(selectedText) {
   injectStyles();
 
   // Button logic
-  popup.querySelector("#cancel-btn").addEventListener("click", () => {
-    popup.remove();
+  const closePopup = () => {
+    popup.classList.remove('visible');
+    setTimeout(() => popup.remove(), 200);
+  };
+  
+  popup.querySelector("#cancel-btn").addEventListener("click", closePopup);
+  popup.querySelector("#close-btn").addEventListener("click", closePopup);
+  
+  // Close when clicking outside the popup
+  popup.addEventListener('click', (e) => {
+    if (e.target === popup) closePopup();
   });
+  
+  // Show the popup with animation
+  setTimeout(() => popup.classList.add('visible'), 10);
 
   popup.querySelector("#generate-btn").addEventListener("click", () => {
     const purpose = popup.querySelector("#email-purpose").value.trim();
@@ -289,69 +321,250 @@ function showLoader() {
 //   // const generateBtn = document.querySelector("#generate-btn");
 //   // const cancelBtn = document.querySelector("#cancel-btn");
 //   // if (generateBtn) generateBtn.disabled = false;
-//   // if (cancelBtn) cancelBtn.disabled = false;
-//   const popup = document.getElementById("ai-email-popup");
-//   if (popup) popup.remove();
-// }
-
 function injectStyles() {
   const style = document.createElement("style");
   style.textContent = `
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --danger: #ef4444;
+      --danger-hover: #dc2626;
+      --border: #e5e7eb;
+      --text: #1f2937;
+      --text-secondary: #4b5563;
+      --radius: 8px;
+      --shadow: 0 4px 20px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.05);
+      --transition: all 0.2s ease;
+    }
+    
     #ai-email-popup {
       position: fixed;
-      top: 20%;
+      top: 50%;
       left: 50%;
-      transform: translateX(-50%);
+      transform: translate(-50%, -50%);
       background: white;
-      border: 1px solid #ccc;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      border-radius: 8px;
-      padding: 16px;
-      z-index: 99999;
-      width: 400px;
-      font-family: Arial, sans-serif;
-    }
-    textarea, input, select {
-      width: 100%;
-      margin-bottom: 12px;
-      padding: 6px;
-    }
-    .popup-buttons {
-      text-align: right;
-    }
-    button {
-      margin-left: 8px;
-      padding: 6px 12px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    #generate-btn {
-      background: #007bff;
-      color: white;
-    }
-    #cancel-btn {
-      background: #ccc;
-    }
-    #popup-loader {
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+      padding: 0;
+      z-index: 100000;
+      width: 440px;
+      max-width: 90vw;
+      max-height: 90vh;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      margin-top: 12px;
-      color: #333;
+      overflow: hidden;
+      opacity: 0;
+      transform: translate(-50%, -45%);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
-    .spinner {
-      border: 3px solid #f3f3f3;
-      border-top: 3px solid #007bff;
+    
+    #ai-email-popup.visible {
+      opacity: 1;
+      transform: translate(-50%, -50%);
+    }
+    
+    .popup-container {
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    
+    .popup-header {
+      padding: 16px 20px;
+      background: var(--primary);
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .popup-header h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .popup-header h3 i {
+      font-size: 18px;
+    }
+    
+    .popup-close {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: white;
+      font-size: 16px;
+      transition: background 0.2s ease;
+    }
+    
+    .popup-close:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+    
+    .popup-content {
+      padding: 20px;
+      flex: 1;
+      overflow-y: auto;
+    }
+    
+    .popup-footer {
+      padding: 16px 20px;
+      background: #f9fafb;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+    
+    .form-group {
+      margin-bottom: 16px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+      color: var(--text);
+      font-size: 14px;
+    }
+    
+    textarea, input, select {
+      width: 100%;
+      padding: 10px 12px;
+      background: #ffffff;
+      color: #000000;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 14px;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    textarea:focus, input:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+    
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+    
+    .btn {
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: 500;
+      font-size: 14px;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: 1px solid transparent;
+    }
+    
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    
+    .btn-primary:hover {
+      background: var(--primary-hover);
+      border-color: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+    
+    .btn-secondary {
+      background: white;
+      color: var(--text);
+      border-color: var(--border);
+    }
+    
+    .btn-secondary:hover {
+      background: #f9fafb;
+      border-color: #d1d5db;
+    }
+    
+    .btn i {
+      font-size: 14px;
+      width: 16px;
+      display: inline-flex;
+      justify-content: center;
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 10px 12px;
+      background: #ffffff;
+      color: #000000;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 14px;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .form-control:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+      outline: none;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group:last-child {
+      margin-bottom: 0;
+    }
+    
+    #popup-loader {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 0;
+    }
+    
+    .spinner {
       width: 24px;
       height: 24px;
+      border: 3px solid rgba(79, 70, 229, 0.1);
+      border-radius: 50%;
+      border-top-color: var(--primary);
       animation: spin 0.8s linear infinite;
-      margin-bottom: 8px;
+      margin-bottom: 12px;
     }
+    
     @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+      to { transform: rotate(360deg); }
+    }
+    
+    .selected-text-preview {
+      background: #f9fafb;
+      border: 1px dashed var(--border);
+      border-radius: 6px;
+      padding: 12px;
+      margin: 12px 0;
+      max-height: 120px;
+      overflow-y: auto;
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.5;
     }
   `;
   document.head.appendChild(style);
