@@ -8,7 +8,7 @@
     "default_popup": "popup/popup.html",
     "default_title": "OG Stocks"
   },
-  
+
   "permissions": [
     "activeTab",
     "scripting",
@@ -20,9 +20,7 @@
     "sidePanel"
   ],
 
-  "optional_host_permissions": [
-    "<all_urls>"
-  ],
+  "optional_host_permissions": ["<all_urls>"],
 
   "host_permissions": [
     "https://maps.googleapis.com/*",
@@ -54,16 +52,15 @@
       "css": ["content.css"]
     }
   ],
-  
+
+  "trial_tokens": [
+    "AmYQqHjdkGY0Ke3xOns/0Szs+zYbBwWEgBzhfOP1dmfEIJjrMr8RNDy5GZOHsIIT7BvLHJYfl2xxY1uLMXcqzgQAAABseyJvcmlnaW4iOiJjaHJvbWUtZXh0ZW5zaW9uOi8vZWNqb2JuY2tuZWZsamdwaGxsZ2Nla25vbmZjY2NuaWoiLCJmZWF0dXJlIjoiQUlXcml0ZXJBUEkiLCJleHBpcnkiOjE3NzY3Mjk2MDB9"
+  ],
+
   "web_accessible_resources": [
     {
-      "resources": [
-        "*.woff2",
-        "*.ttf"
-      ],
-      "matches": [
-        "<all_urls>"
-      ],
+      "resources": ["*.woff2", "*.ttf"],
+      "matches": ["<all_urls>"],
       "use_dynamic_url": true
     }
   ]
