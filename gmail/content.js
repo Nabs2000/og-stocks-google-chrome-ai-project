@@ -1,6 +1,8 @@
 chrome.runtime.onMessage.addListener((message) => {
   if (message.type === "SHOW_POPUP") {
     createPopup(message.selectedText);
+  } else if (message.type === "EMAIL_GENERATION_DONE") {
+    hideLoader();
   }
 });
 
@@ -12,9 +14,8 @@ function createPopup(selectedText) {
   popup.id = "ai-email-popup";
   popup.innerHTML = `
     <div class="popup-container">
-      <h3>AI Email Generator</h3>
+      <h3>Clipboard AI: Genearate an email</h3>
       <p><strong>Selected text:</strong></p>
-      <textarea readonly>${selectedText}</textarea>
       <label>What is this email for?</label>
       <input id="email-purpose" placeholder="e.g., Job application, follow-up, etc." />
       <label for="email-tone">Tone</label>
@@ -26,6 +27,10 @@ function createPopup(selectedText) {
       <div class="popup-buttons">
         <button id="cancel-btn">Cancel</button>
         <button id="generate-btn">Generate</button>
+      </div>
+      <div id="popup-loader" style="display:none;">
+        <div class="spinner"></div>
+        <p>Generating email...</p>
       </div>
     </div>
   `;
@@ -48,14 +53,31 @@ function createPopup(selectedText) {
     if (!tone) {
       tone = "formal";
     }
+    showLoader();
     chrome.runtime.sendMessage({
       type: "GENERATE_EMAIL",
       selectedText,
       purpose,
       tone,
     });
-    popup.remove();
   });
+}
+
+function showLoader() {
+  document.querySelector("#popup-loader").style.display = "flex";
+  document.querySelector("#generate-btn").disabled = true;
+//   document.querySelector("#cancel-btn").disabled = true;
+}
+
+function hideLoader() {
+  const loader = document.querySelector("#popup-loader");
+  if (loader) loader.style.display = "none";
+  const generateBtn = document.querySelector("#generate-btn");
+  const cancelBtn = document.querySelector("#cancel-btn");
+  if (generateBtn) generateBtn.disabled = false;
+  if (cancelBtn) cancelBtn.disabled = false;
+  const popup = document.getElementById("ai-email-popup");
+  if (popup) popup.remove();
 }
 
 function injectStyles() {
@@ -75,19 +97,10 @@ function injectStyles() {
       width: 400px;
       font-family: Arial, sans-serif;
     }
-    .popup-container h3 {
-      margin-top: 0;
-    }
-    textarea {
+    textarea, input, select {
       width: 100%;
-      height: 80px;
-      resize: none;
-      margin-bottom: 8px;
-    }
-    input {
-      width: 100%;
-      padding: 6px;
       margin-bottom: 12px;
+      padding: 6px;
     }
     .popup-buttons {
       text-align: right;
@@ -105,6 +118,26 @@ function injectStyles() {
     }
     #cancel-btn {
       background: #ccc;
+    }
+    #popup-loader {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 12px;
+      color: #333;
+    }
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #007bff;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 8px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
   `;
   document.head.appendChild(style);

@@ -67,7 +67,6 @@ async function draftEmailWithAI(selectedText, purpose, tone) {
         alert("Writer API is not available at the moment.");
       }
       if (writer) {
-        // Show spinner in content script
         const email = await writer.write(
           `Compose an email for the following purpose: ${purpose}. Here is the context:${selectedText}`
         );
@@ -86,7 +85,7 @@ async function draftEmailWithAI(selectedText, purpose, tone) {
   } else {
     console.error("Writer API is not available.");
   }
-};
+}
 
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   if (info.menuItemId === "highlightAction") {
@@ -101,17 +100,19 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   }
 });
 
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   if (message.type === "GENERATE_EMAIL") {
-    const { selectedText, purpose, tone } = message;
-    console.log("Generating email for purpose:", purpose);
-    chrome.scripting.executeScript({
-      target: { tabId: sender.tab.id },
-      func: draftEmailWithAI,
-      args: [selectedText, purpose],
-    });
-    sendResponse({ status: "ok" });
+    try {
+      const { selectedText, purpose, tone } = message;
+      console.log("Generating email for purpose:", purpose);
+      await chrome.scripting.executeScript({
+        target: { tabId: sender.tab.id },
+        func: draftEmailWithAI,
+        args: [selectedText, purpose, tone],
+      });
+      sendResponse({ status: "ok" });
+    } finally {
+      chrome.tabs.sendMessage(sender.tab.id, { type: "EMAIL_GENERATION_DONE" });
+    }
   }
 });
-
-
