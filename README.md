@@ -1,12 +1,52 @@
-# og-stocks-google-chrome-ai-project
+# 📋 Clipboard AI Extension
 
-## Load and Test Your Extension in Chrome
-1. Open Chrome and navigate to chrome://extensions/.
+A powerful Chrome extension that enhances your clipboard with AI capabilities, making text manipulation and management smarter and more efficient.
 
-2. Toggle the Developer mode switch (usually in the upper-right corner).
+## ✨ Features
 
-3. Click the Load unpacked button.
+- AI-powered clipboard history
+- Smart text analysis and suggestions
+- Quick access to recent clipboard items
+- Cross-device synchronization (coming soon)
+- Customizable keyboard shortcuts
 
-4. Navigate to and select your extension's folder (my-first-extension).
+## 🚀 Installation
 
-Your extension should now appear in the list and its icon should be in your toolbar. Click the icon to see your popup, and use the "Inspect Popup" option in the right-click menu to open the Developer Console for debugging
+### Prerequisites
+- Google Chrome (version 88 or later)
+- Node.js (v14 or later) - for development
+- npm or yarn - for development
+
+### Load the Extension
+
+1. Open Chrome and navigate to `chrome://extensions/`
+2. Enable **Developer mode** using the toggle in the top-right corner
+3. Click **Load unpacked**
+4. Select the extension directory (`clipboard-ai-extension`)
+5. Highlight some text on any website and you will see three buttons:
+- Summarize
+- Get Directions
+- Generate Email
+
+**NOTE**: If the extension does not show any buttons, try restarting the Chrome browser.
+
+## 📁 Project Structure
+```
+clipboard-ai-extension/
+├── background.js      # Background script
+├── manifest.json      # Extension manifest
+├── popup/            # Popup UI
+│   ├── popup.html
+│   └── popup.js
+└── sidepanel/        # Sidepanel UI
+    ├── sidepanel.html
+    └── sidepanel.css
+```
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 📬 Contact
+
+For questions or feedback, please open an issue or contact us at [nabeelsabz101@gmail.com](mailto:nabeelsabz101@gmail.com)
