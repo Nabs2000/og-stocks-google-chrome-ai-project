@@ -1,98 +1,410 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <title>Maps Directions</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Clipboard Pro</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
     <style>
+      :root {
+        --primary: #4f46e5;
+        --primary-hover: #4338ca;
+        --secondary: #6b7280;
+        --secondary-hover: #4b5563;
+        --danger: #ef4444;
+        --danger-hover: #dc2626;
+        --success: #10b981;
+        --success-hover: #0d9b6c;
+        --background: #f9fafb;
+        --surface: #ffffff;
+        --text: #111827;
+        --text-secondary: #4b5563;
+        --border: #e5e7eb;
+        --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        --radius: 0.5rem;
+        --transition: all 0.2s ease-in-out;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
       body {
-        width: 250px;
-        padding: 15px;
-        font-family: Arial, sans-serif;
+        width: 300px;
+        padding: 1.25rem;
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
+        background: var(--background);
+        color: var(--text);
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
       }
-      button {
-        width: 100%;
-        padding: 10px;
-        margin: 5px 0;
+
+      .app-header {
+        text-align: center;
+        margin-bottom: 1.25rem;
+      }
+
+      .app-logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .app-logo i {
+        font-size: 1.5rem;
+        color: var(--primary);
+      }
+
+      .app-logo h1 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text);
+        margin: 0;
+      }
+
+      .app-description {
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        margin: 0.25rem 0 1.5rem;
+      }
+
+      .clipboard-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.75rem 1.25rem;
+        border-radius: var(--radius);
+        font-weight: 500;
+        font-size: 0.9375rem;
         cursor: pointer;
+        transition: var(--transition);
+        border: none;
+        width: 100%;
+        text-align: center;
       }
-      .icon {
-        width: 20px;
-        height: 20px;
-        margin-right: 10px;
-        vertical-align: middle;
+
+      .btn i {
+        margin-right: 0.5rem;
+        font-size: 1rem;
       }
-      .user-info {
-        margin: 10px 0;
-        padding: 10px;
-        background: #f5f5f5;
-        border-radius: 4px;
+
+      .btn-primary {
+        background-color: var(--primary);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background-color: var(--primary-hover);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1),
+          0 2px 4px -2px rgb(0 0 0 / 0.1);
+      }
+
+      .btn-secondary {
+        background-color: var(--secondary);
+        color: white;
+      }
+
+      .btn-secondary:hover {
+        background-color: var(--secondary-hover);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1),
+          0 2px 4px -2px rgb(0 0 0 / 0.1);
+      }
+
+      .btn-danger {
+        background-color: var(--danger);
+        color: white;
+      }
+
+      .btn-danger:hover {
+        background-color: var(--danger-hover);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1),
+          0 2px 4px -2px rgb(0 0 0 / 0.1);
+      }
+
+      .btn-sm {
+        padding: 0.4rem 0.75rem;
+        font-size: 0.8125rem;
+      }
+
+      .btn-text {
+        background: none;
+        color: var(--primary);
+        padding: 0.25rem 0.5rem;
+        font-size: 0.8125rem;
+        font-weight: 500;
+        width: auto;
+      }
+
+      .btn-text:hover {
+        background-color: rgba(79, 70, 229, 0.1);
+        transform: none;
+        box-shadow: none;
+      }
+
+      .clipboard-content {
+        background: var(--surface);
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        overflow: hidden;
+        margin-bottom: 1rem;
+      }
+
+      .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        background-color: #f9fafb;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .section-header h3 {
+        font-size: 0.9375rem;
+        font-weight: 600;
+        color: var(--text);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .history-list {
+        max-height: 200px;
+        overflow-y: auto;
+      }
+
+      .history-item {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--border);
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        font-size: 0.875rem;
+        line-height: 1.5;
+      }
+
+      .history-item:hover {
+        background-color: rgba(0, 0, 0, 0.02);
+      }
+
+      .history-item:last-child {
+        border-bottom: none;
+      }
+
+      .history-item .content-preview {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: var(--text-secondary);
+      }
+
+      .history-item .timestamp {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+        opacity: 0.7;
+        margin-top: 0.25rem;
+      }
+
+      .empty-state {
+        padding: 2rem 1rem;
+        text-align: center;
+        color: var(--text-secondary);
+      }
+
+      .empty-state i {
+        font-size: 2rem;
+        opacity: 0.5;
+        margin-bottom: 0.75rem;
+      }
+
+      .empty-state p {
+        margin: 0;
+        font-size: 0.875rem;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.625rem 1.25rem;
+        border-radius: var(--radius);
+        font-weight: 500;
+        font-size: 0.9375rem;
+        cursor: pointer;
+        transition: var(--transition);
+        border: none;
+        width: 100%;
+        margin-bottom: 0.75rem;
+      }
+
+      .btn i {
+        margin-right: 0.5rem;
+        font-size: 1rem;
+      }
+
+      .btn-primary {
+        background-color: var(--primary);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background-color: var(--primary-hover);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1),
+          0 2px 4px -2px rgb(0 0 0 / 0.1);
+      }
+
+      .btn-danger {
+        background-color: var(--danger);
+        color: white;
+      }
+
+      .btn-danger:hover {
+        background-color: var(--danger-hover);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1),
+          0 2px 4px -2px rgb(0 0 0 / 0.1);
+      }
+
+      .user-card {
+        background: var(--surface);
+        border-radius: var(--radius);
+        padding: 1rem;
+        margin-bottom: 1.25rem;
         display: none;
+        align-items: center;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
       }
+
       .user-avatar {
-        width: 40px;
-        height: 40px;
+        width: 48px;
+        height: 48px;
         border-radius: 50%;
-        margin-right: 10px;
-        vertical-align: middle;
+        margin-right: 0.75rem;
+        object-fit: cover;
+        border: 2px solid var(--primary);
+        padding: 2px;
       }
+
       .user-details {
-        display: inline-block;
-        vertical-align: middle;
+        flex: 1;
+        overflow: hidden;
       }
+
       .user-name {
-        font-weight: bold;
-        display: block;
+        font-weight: 600;
+        color: var(--text);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-bottom: 0.125rem;
       }
+
       .user-email {
-        font-size: 0.8em;
-        color: #666;
+        font-size: 0.8125rem;
+        color: var(--text-secondary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
-      .signin-btn {
-        background-color: #4285f4;
-        color: white;
-        border: none;
-        border-radius: 4px;
-      }
-      .signout-btn {
-        background-color: #f44336;
-        color: white;
-        border: none;
-        border-radius: 4px;
-      }
-      .status {
-        margin: 10px 0;
-        padding: 10px;
-        border-radius: 4px;
+
+      .status-message {
+        padding: 0.75rem 1rem;
+        border-radius: var(--radius);
+        margin-bottom: 1rem;
         display: none;
+        font-size: 0.875rem;
+        align-items: center;
       }
-      .success {
-        background-color: #e8f5e9;
-        color: #2e7d32;
+
+      .status-message i {
+        margin-right: 0.5rem;
+        font-size: 1rem;
       }
-      .error {
-        background-color: #ffebee;
-        color: #c62828;
+
+      .status-success {
+        background-color: #ecfdf5;
+        color: #065f46;
+        border: 1px solid #a7f3d0;
+      }
+
+      .status-error {
+        background-color: #fef2f2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+      }
+
+      .action-section {
+        margin-top: 1.5rem;
+        padding-top: 1.25rem;
+        border-top: 1px solid var(--border);
+      }
+
+      .action-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.75rem 1.25rem;
+        background-color: #fff;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        color: var(--text);
+        font-weight: 500;
+        font-size: 0.9375rem;
+        cursor: pointer;
+        transition: var(--transition);
+        width: 100%;
+        text-align: left;
+      }
+
+      .action-btn:hover {
+        background-color: #f9fafb;
+        border-color: var(--primary);
+        color: var(--primary);
+      }
+
+      .action-btn i {
+        margin-right: 0.75rem;
+        font-size: 1.25rem;
+        color: var(--primary);
+      }
+
+      .hidden {
+        display: none !important;
       }
     </style>
   </head>
   <body>
-    <div id="userInfo" class="user-info">
-      <img id="userAvatar" class="user-avatar" src="" alt="User Avatar">
-      <div class="user-details">
-        <span id="userName" class="user-name"></span>
-        <span id="userEmail" class="user-email"></span>
+    <header class="app-header">
+      <div class="app-logo">
+        <i class="fas fa-clipboard"></i>
+        <h1>Clipboard Pro</h1>
       </div>
-    </div>
-
-    <button id="signinBtn" class="signin-btn">Sign in with Google</button>
-    <button id="signoutBtn" class="signout-btn" style="display: none;">Sign Out</button>
-    
-    <div id="statusMessage" class="status"></div>
-    
-    <button id="suggestMaps">
-      <img class="icon" src="../images/gmaps_icon.png" alt="Maps" />
-      Get Directions
-    </button>
-
+      <p class="app-description">Manage your clipboard with ease</p>
+    </header>
     <script type="module" src="popup.js"></script>
   </body>
 </html>

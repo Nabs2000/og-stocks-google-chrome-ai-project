@@ -1,24 +1,56 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Smart Summarizer Panel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Summarizer</title>
     <link rel="stylesheet" href="sidepanel.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
   </head>
   <body>
-    <h2>Current Summary</h2>
-    <div id="summaryOutput">No summary yet.</div>
+    <header class="app-header">
+      <div class="app-logo">
+        <i class="fas fa-robot"></i>
+        <h1>Smart Summarizer</h1>
+      </div>
+      <p class="app-description">Get quick summaries of selected text</p>
+    </header>
 
-    <div class="button-container">
-      <button id="clearBtn" class="hidden">Clear</button>
-      <button id="copyBtn" class="hidden">Copy</button>
-      <button id="clearHistoryBtn" class="hidden">Clear History</button>
-      <span id="copiedText" class="hidden">Copied!</span>
-    </div>
+    <main>
+      <section class="summary-section">
+        <h2><i class="fas fa-scroll"></i> Current Summary</h2>
+        <div id="summaryOutput" class="summary-output"></div>
 
-    <hr />
-    <h2>History</h2>
-    <div id="historyContainer">No history yet.</div>
+        <div class="button-container">
+          <button id="copyBtn" class="btn btn-primary" title="Copy to clipboard">
+            <i class="far fa-copy"></i> Copy
+          </button>
+          <button id="clearBtn" class="btn btn-secondary" title="Clear current summary">
+            <i class="far fa-trash-alt"></i> Clear
+          </button>
+          <span id="copiedText" class="copied-text">
+            <i class="fas fa-check"></i> Copied!
+          </span>
+        </div>
+      </section>
+
+      <hr />
+
+      <section class="history-section">
+        <div class="section-header">
+          <h2><i class="fas fa-history"></i> History</h2>
+          <button id="clearHistoryBtn" class="btn btn-danger btn-sm" title="Clear all history">
+            <i class="fas fa-trash"></i> Clear All
+          </button>
+        </div>
+        <div id="historyContainer" class="history-container"></div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <p>Select text and right-click to summarize</p>
+    </footer>
 
     <script src="sidepanel.js"></script>
   </body>
