@@ -10,12 +10,37 @@ async function summarizeBuiltIn(text) {
   const summarizer = await Summarizer.create({
     type: "key-points",
     format: "markdown",
-    length: "short"
+    length: "short",
   });
 
   // Perform summarization
   const summary = await summarizer.summarize(text);
   return summary;
+}
+
+// Create a function to summarize the summary in one sentence
+async function summarizeSummary(summary) {
+  console.log("Summarizing summary...");
+  console.log("Summary:", summary);
+  const availability = await LanguageModel.availability();
+  if (availability === "unavailable") {
+    throw new Error("Language model is not available. Please try again later.");
+  }
+
+  const session = await LanguageModel.create({
+    initialPrompts: [
+      {
+        role: "system",
+        content: `Your job is to only title this summary in 3-5 words and print it out in regular, unformatted text.`,
+      },
+    ],
+    temperature: 0.2,
+    topK: 40,
+  });
+
+  const response = await session.prompt(summary);
+  console.log("Response:", response);
+  return response;
 }
 
 // --- Helper Functions from background-gmaps.js ---
@@ -60,7 +85,9 @@ async function extractLocationsWithAI(text) {
 
     const availability = await LanguageModel.availability();
     if (availability === "unavailable") {
-      throw new Error("Language model is not available. Please try again later.");
+      throw new Error(
+        "Language model is not available. Please try again later."
+      );
     }
 
     const session = await LanguageModel.create({
@@ -77,7 +104,7 @@ async function extractLocationsWithAI(text) {
             "reason": "Brief explanation of why this was chosen as the destination"
           }
           If no clear destination can be determined, return:
-          { "destination": null, "confidence": "none", "reason": "Explanation" }`
+          { "destination": null, "confidence": "none", "reason": "Explanation" }`,
         },
       ],
       temperature: 0.2,
@@ -125,7 +152,7 @@ async function extractLocationsWithAI(text) {
 
 async function getDirections(origin, destination) {
   console.log(`Getting directions from ${origin} to ${destination}`);
-  
+
   const params = new URLSearchParams({
     api: "1",
     destination: destination,
@@ -229,10 +256,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       // --- Messages from Summarize Feature ---
       if (message?.type === "TEXT_SELECTED") {
         const summary = await summarizeBuiltIn(message.text);
-        sendResponse({ ok: true, summary });
-      } 
-      
-      else if (message?.type === "OPEN_SUMMARY_SIDEPANEL") {
+        const summaryTitle = await summarizeSummary(summary);
+        sendResponse({ ok: true, summary, summaryTitle });
+      } else if (message?.type === "OPEN_SUMMARY_SIDEPANEL") {
         if (sender.tab?.id) {
           await chrome.sidePanel.open({ tabId: sender.tab.id });
           sendResponse({ ok: true });
@@ -246,38 +272,52 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       else if (message?.type === "CHECK_AUTH") {
         const authenticated = await isAuthenticated();
         sendResponse({ authenticated });
-      } 
-      
-      else if (message?.type === "AUTHENTICATE") {
+      } else if (message?.type === "AUTHENTICATE") {
         const result = await authenticate();
         sendResponse(result);
-      } 
-      
-      else if (message?.type === "GET_DIRECTIONS") {
+      } else if (message?.type === "GET_DIRECTIONS") {
         const authenticated = await isAuthenticated();
         if (!authenticated) {
-          sendResponse({ ok: false, error: "Not authenticated", requiresAuth: true });
+          sendResponse({
+            ok: false,
+            error: "Not authenticated",
+            requiresAuth: true,
+          });
           return; // Stop execution
         }
 
         try {
-          const { origin, destination, confidence, reason } = await extractLocationsWithAI(message.text);
+          const { origin, destination, confidence, reason } =
+            await extractLocationsWithAI(message.text);
 
           if (!destination) {
             throw new Error("Could not determine a destination.");
           }
           if (confidence === "low") {
-             throw new Error("Could not determine a clear destination. Please try selecting more specific text.");
+            throw new Error(
+              "Could not determine a clear destination. Please try selecting more specific text."
+            );
           }
 
-          console.log("Location extraction results:", { origin, destination, confidence, reason });
-          
-          const result = await getDirections(origin || "current location", destination);
-          sendResponse({ ok: true, url: result.url });
+          console.log("Location extraction results:", {
+            origin,
+            destination,
+            confidence,
+            reason,
+          });
 
+          const result = await getDirections(
+            origin || "current location",
+            destination
+          );
+          sendResponse({ ok: true, url: result.url });
         } catch (error) {
           console.error("Error processing directions:", error);
-          sendResponse({ ok: false, error: error.message, requiresAuth: error.message.includes("authentication") });
+          sendResponse({
+            ok: false,
+            error: error.message,
+            requiresAuth: error.message.includes("authentication"),
+          });
         }
       } 
       else if (message.type === "GENERATE_EMAIL") {
@@ -294,16 +334,18 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           chrome.tabs.sendMessage(sender.tab.id, { type: "EMAIL_GENERATION_DONE" });
         }
       }
-      
+
       // --- Default case ---
       else {
         // Optional: handle unknown message types
         // sendResponse({ ok: false, error: `Unknown message type: ${message?.type}` });
       }
-
     } catch (error) {
       console.error("Unexpected error in message handler:", error);
-      sendResponse({ ok: false, error: error.message || "An unexpected error occurred" });
+      sendResponse({
+        ok: false,
+        error: error.message || "An unexpected error occurred",
+      });
     }
   })();
 
