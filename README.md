@@ -1,6 +1,6 @@
 # 📋 Clipboard AI Extension
 
-A powerful Chrome extension that enhances your clipboard with AI capabilities, making text manipulation and management smarter and more efficient.
+A powerful Chrome extension that enhances your clipboard with AI capabilities, making text manipulation and management smarter and more efficient. See demo [here](www.youtube.com/watch?v=gdtop877DbA)
 
 ## ✨ Features
 
